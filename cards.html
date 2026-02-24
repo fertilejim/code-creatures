@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Creatures — Starter Set (12 Karten)</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --card-w: 85mm;
+  --card-h: 120mm;
+  --radius: 4mm;
+  --shadow: 0 2px 12px rgba(0,0,0,.12);
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --bg: #f4f0e8;
+  --text: #2d2a26;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+/* ===== SCREEN LAYOUT ===== */
+.screen-only { display: block; }
+
+header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #ff6b35, #e84393, #6c5ce7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+header p { color: #666; margin-top: .4rem; font-size: 1rem; }
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  gap: .8rem;
+  padding: 1rem;
+  flex-wrap: wrap;
+}
+.toolbar button {
+  padding: .6rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .1s, box-shadow .15s;
+}
+.toolbar button:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+.btn-print { background: #6c5ce7; color: #fff; }
+.btn-guide { background: #00b894; color: #fff; }
+.btn-freebie { background: #ff6b35; color: #fff; }
+
+/* ===== CARD GRID (SCREEN) ===== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 2rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===== SINGLE CARD ===== */
+.card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  transition: transform .15s;
+  break-inside: avoid;
+}
+.card:hover { transform: translateY(-3px); }
+
+.card-top {
+  position: relative;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.card-top svg {
+  width: 110px;
+  height: 110px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.1));
+}
+.card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(4px);
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: #555;
+}
+.card-number {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-size: .75rem;
+  font-weight: 800;
+  color: rgba(255,255,255,.7);
+}
+
+.card-body {
+  padding: 1rem 1.1rem 1.2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.card-body h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: .15rem;
+}
+.card-body .concept {
+  font-size: .78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: .6rem;
+  opacity: .55;
+}
+.card-body .explanation {
+  font-size: .88rem;
+  line-height: 1.5;
+  color: #444;
+  margin-bottom: .8rem;
+  flex: 1;
+}
+.card-body .activity {
+  background: #f8f6f2;
+  border-radius: 8px;
+  padding: .65rem .8rem;
+  font-size: .82rem;
+  line-height: 1.45;
+}
+.activity-label {
+  font-weight: 700;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: .25rem;
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+}
+
+/* ===== PRINT LAYOUT ===== */
+@media print {
+  .screen-only, header, .toolbar, .guide-section { display: none !important; }
+  body { background: #fff; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0;
+    max-width: none;
+  }
+
+  .card {
+    width: var(--card-w);
+    height: var(--card-h);
+    border-radius: var(--radius);
+    box-shadow: none;
+    border: .3mm dashed #bbb;
+    margin: 5mm auto;
+    page-break-inside: avoid;
+    overflow: hidden;
+  }
+  .card:hover { transform: none; }
+  .card-top { height: 38mm; }
+  .card-top svg { width: 28mm; height: 28mm; }
+  .card-body { padding: 3mm 3.5mm 3mm; }
+  .card-body h2 { font-size: 3.2mm; }
+  .card-body .concept { font-size: 2.2mm; margin-bottom: 1.5mm; }
+  .card-body .explanation { font-size: 2.5mm; line-height: 1.4; margin-bottom: 2mm; }
+  .card-body .activity { padding: 2mm 2.5mm; font-size: 2.3mm; }
+  .activity-label { font-size: 2mm; }
+  .card-number { font-size: 2.2mm; top: 2mm; left: 3mm; }
+  .card-badge { font-size: 1.8mm; top: 2mm; right: 3mm; padding: 1mm 2.5mm; }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+}
+
+/* ===== GUIDE SECTION ===== */
+.guide-section {
+  max-width: 780px;
+  margin: 0 auto 3rem;
+  padding: 2rem;
+  display: none;
+}
+.guide-section.visible { display: block; }
+.guide-section h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #6c5ce7;
+}
+.guide-section h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 1.2rem 0 .4rem;
+}
+.guide-section p, .guide-section li {
+  font-size: .95rem;
+  line-height: 1.6;
+  color: #444;
+}
+.guide-section ul { padding-left: 1.4rem; }
+.guide-section li { margin-bottom: .3rem; }
+.guide-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  margin-top: 1rem;
+}
+.tip-box {
+  background: #fff8e1;
+  border-left: 4px solid #ffc107;
+  padding: .8rem 1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1rem 0;
+  font-size: .9rem;
+}
+
+footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: .8rem;
+  color: #999;
+}
+</style>
+</head>
+<body>
+
+<header class="screen-only">
+  <h1>🦁 Code Creatures</h1>
+  <p>12 Coding-Karten für Kinder — ganz ohne Bildschirm</p>
+</header>
+
+<div class="toolbar screen-only">
+  <button class="btn-print" onclick="window.print()">🖨️ Alle drucken (2 pro A4)</button>
+  <button class="btn-guide" onclick="toggleGuide()">📖 Eltern-Guide</button>
+  <button class="btn-freebie" onclick="showFreebie()">🎁 Freebie (3 Karten)</button>
+</div>
+
+<div class="card-grid" id="cardGrid"></div>
+
+<section class="guide-section" id="guideSection">
+  <div class="guide-box">
+    <h2>📖 Eltern-Guide — So spielst du mit Code Creatures</h2>
+
+    <h3>Was ist Code Creatures?</h3>
+    <p>Code Creatures bringt Kindern (5–10 Jahre) die Grundlagen des Programmierens bei — <strong>ganz ohne Computer, Tablet oder Handy</strong>. Jede Karte stellt ein Coding-Konzept als lustiges Tier vor und enthält eine Aktivität, die ihr gemeinsam ausprobieren könnt.</p>
+
+    <h3>🎯 Was lernt mein Kind dabei?</h3>
+    <p>Programmieren ist im Kern <em>logisches Denken</em>. Euer Kind lernt:</p>
+    <ul>
+      <li><strong>Probleme in kleine Schritte zerlegen</strong> (Sequenzen, Algorithmen)</li>
+      <li><strong>Entscheidungen treffen</strong> (Wenn-Dann, Wahr/Falsch)</li>
+      <li><strong>Muster erkennen und wiederholen</strong> (Schleifen, Pattern)</li>
+      <li><strong>Fehler finden und beheben</strong> (Debugging)</li>
+      <li><strong>Informationen organisieren</strong> (Variablen, Listen)</li>
+    </ul>
+
+    <h3>🃏 So nutzt ihr die Karten</h3>
+    <p><strong>Variante 1 — Karte für Karte (empfohlen zum Start):</strong></p>
+    <ul>
+      <li>Nehmt eine Karte und lest die Erklärung zusammen vor</li>
+      <li>Macht die Aktivität gemeinsam (10–15 Min. pro Karte)</li>
+      <li>Sprecht darüber: „Wo begegnet uns das im Alltag?“</li>
+      <li>Empfohlene Reihenfolge: Karte 1 → 12 (aufbauend)</li>
+    </ul>
+    <p><strong>Variante 2 — Freies Entdecken:</strong></p>
+    <ul>
+      <li>Kind zieht eine zufällige Karte</li>
+      <li>Tier anschauen, Erklärung lesen, Aktivität machen</li>
+      <li>Gut für Kinder die schon Grundlagen kennen</li>
+    </ul>
+    <p><strong>Variante 3 — Quiz-Spiel (2+ Kinder):</strong></p>
+    <ul>
+      <li>Ein Kind liest die Erklärung vor (ohne den Namen zu nennen)</li>
+      <li>Die anderen raten: Welches Coding-Konzept ist das?</li>
+      <li>Wer's richtig hat, darf die nächste Karte vorlesen</li>
+    </ul>
+
+    <div class="tip-box">
+      💡 <strong>Tipp:</strong> Macht nicht alle 12 Karten an einem Tag! 2–3 Karten pro Session sind perfekt. Lasst die Konzepte „sacken“ und entdeckt sie im Alltag wieder. („Schau mal, die Ampel ist wie eine If-Else-Entscheidung!")
+    </div>
+
+    <h3>🏗️ Schwierigkeitsstufen</h3>
+    <ul>
+      <li>⭐ <strong>Starter</strong> (Karten 1–4): Sequenz, Schleife, Variable, Bedingung — die Basis</li>
+      <li>⭐⭐ <strong>Entdecker</strong> (Karten 5–8): Funktionen, Debugging, Listen, Wahr/Falsch</li>
+      <li>⭐⭐⭐ <strong>Profi</strong> (Karten 9–12): Algorithmen, Muster, Rekursion, Events</li>
+    </ul>
+
+    <h3>📌 Häufige Fragen</h3>
+    <p><strong>Ab welchem Alter?</strong><br>Ab 5 Jahren mit Eltern-Hilfe, ab 7–8 auch selbstständig. Die Aktivitäten sind bewusst einfach gehalten.</p>
+    <p><strong>Brauche ich Programmierkenntnisse?</strong><br>Nein! Die Erklärungen sind so geschrieben, dass auch Eltern ohne Tech-Hintergrund alles verstehen und erklären können.</p>
+    <p><strong>Was brauche ich zum Spielen?</strong><br>Nur die ausgedruckten Karten, eine Schere, und je nach Aktivität: Bauklötze, Stifte, Papier, oder Alltagsgegenstände.</p>
+
+    <div class="tip-box">
+      🖨️ <strong>Druck-Tipp:</strong> Druckt die Karten auf dickerem Papier (160g+) oder laminiert sie — so halten sie länger und fühlen sich wertiger an!
+    </div>
+  </div>
+</section>
+
+<footer class="screen-only">
+  <p>Code Creatures © 2026 — Starter Set (12 Karten) + Eltern-Guide<br>
+  Erstellt für Kinder von 5–10 Jahren. Kein Bildschirm nötig. 🌿</p>
+</footer>
+
+<script>
+const CARDS = [
+  {
+    id: 1,
+    name: "Sequenz-Schlange",
+    concept: "Sequenz — Reihenfolge",
+    color: "#00b894",
+    colorLight: "#e8f8f5",
+    difficulty: 1,
+    explanation: "Eine Schlange bewegt sich immer Schritt für Schritt vorwärts — genau wie ein Computer Anweisungen abarbeitet. Erst Schritt 1, dann Schritt 2, dann Schritt 3. Die Reihenfolge ist wichtig! Wenn du die Schritte vertauschst, kommt etwas ganz anderes raus.",
+    activity: "Schreibt zusammen ein „Rezept“ für eine einfache Aufgabe (z.B. Zähne putzen). Jeder Schritt auf einen Zettel. Dann: Vertauscht die Zettel — was passiert, wenn die Reihenfolge falsch ist? 🦷😂“,
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e8f8f5"/><path d="M25 60 Q35 40 50 55 Q65 70 75 50 Q85 30 80 25" stroke="#00b894" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="80" cy="25" r="6" fill="#00b894"/><circle cx="76" cy="23" r="1.5" fill="#fff"/><circle cx="83" cy="23" r="1.5" fill="#fff"/><path d="M78 28 Q80 30 82 28" stroke="#fff" stroke-width=".8" fill="none"/><path d="M25 58 L22 62 M25 58 L28 62" stroke="#00b894" stroke-width="1.5" stroke-linecap="round"/></svg>`
+  },
+  {
+    id: 2,
+    name: "Loop-Löwe",
+    concept: "Schleife — Wiederholung",
+    color: "#ff6b35",
+    colorLight: "#fff3ee",
+    difficulty: 1,
+    explanation: "Ein Löwe läuft jeden Tag die gleiche Runde durch sein Revier — immer wieder und wieder. Das ist eine Schleife! Computer wiederholen Dinge auch, bis eine Bedingung erfüllt ist. Statt 100 Mal das Gleiche zu sagen, sagst du einfach: „Mach das 100 Mal!““,
+    activity: "Klatschen-Spiel: Einer gibt ein Muster vor (klatschen, stampfen, schnipsen) und sagt „Wiederhole 5 Mal!“ Der andere macht es. Dann: „Wiederhole BIS ich Stopp sage!“ — das ist eine andere Art Schleife! 🔁“,
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff3ee"/><circle cx="50" cy="52" r="20" fill="#ff6b35"/><ellipse cx="50" cy="58" rx="12" ry="8" fill="#e05a2b"/><circle cx="43" cy="48" r="3" fill="#fff"/><circle cx="43" cy="48" r="1.5" fill="#222"/><circle cx="57" cy="48" r="3" fill="#fff"/><circle cx="57" cy="48" r="1.5" fill="#222"/><ellipse cx="50" cy="55" rx="3" ry="2" fill="#c0392b"/><path d="M44 60 Q50 65 56 60" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M28 38 Q22 25 35 22 Q42 20 42 30" stroke="#e09040" stroke-width="5" fill="none"/><path d="M72 38 Q78 25 65 22 Q58 20 58 30" stroke="#e09040" stroke-width="5" fill="none"/><path d="M32 52 Q20 45 25 35" stroke="#e09040" stroke-width="5" fill="none"/><path d="M68 52 Q80 45 75 35" stroke="#e09040" stroke-width="5" fill="none"/><path d="M35 65 Q30 75 35 72" stroke="#e09040" stroke-width="4" fill="none"/><path d="M65 65 Q70 75 65 72" stroke="#e09040" stroke-width="4" fill="none"/><circle cx="42" cy="30" r="2" fill="#ff6b35"/><circle cx="58" cy="30" r="2" fill="#ff6b35"/></svg>`
+  },
+  {
+    id: 3,
+    name: "Variable-Vogel",
+    concept: "Variable — Speicherbox",
+    color: "#6c5ce7",
+    colorLight: "#f0eeff",
+    difficulty: 1,
+    explanation: "Ein Vogel sammelt Dinge in seinem Nest: Mal liegt ein Wurm drin, mal ein Steinchen, mal ein Blatt. Das Nest ist immer da, aber der Inhalt kann sich ändern. Genau so funktioniert eine Variable — sie ist eine Box mit einem Namen, in die du verschiedene Werte legen kannst.",
+    activity: "Nehmt 3 Becher und beschriftet sie (z.B. „Alter“, „Lieblingsfarbe“, „Punkte“). Legt Zettel mit Werten rein. Tauscht die Werte aus! „Punkte“ war 5, jetzt ist es 10. Die Variable (der Becher) bleibt, der Wert ändert sich! 🏆“,
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f0eeff"/><ellipse cx="50" cy="55" rx="16" ry="14" fill="#6c5ce7"/><ellipse cx="50" cy="45" rx="10" ry="9" fill="#6c5ce7"/><circle cx="45" cy="43" r="2.5" fill="#fff"/><circle cx="45" cy="43" r="1.2" fill="#222"/><circle cx="55" cy="43" r="2.5" fill="#fff"/><circle cx="55" cy="43" r="1.2" fill="#222"/><polygon points="50,47 47,51 53,51" fill="#ffa502"/><path d="M32 50 Q20 40 28 55 Q30 58 35 55" fill="#5a4bd1" /><path d="M68 50 Q80 40 72 55 Q70 58 65 55" fill="#5a4bd1" /><rect x="40" y="70" rx="3" width="20" height="14" fill="#ffeaa7" stroke="#f39c12" stroke-width="1"/><text x="50" y="80" text-anchor="middle" font-size="6" font-weight="bold" fill="#e17055">x = 7</text></svg>`
+  },
+  {
+    id: 4,
+    name: "If-Igel",
+    concept: "Bedingung — Wenn-Dann",
+    color: "#e84393",
+    colorLight: "#fde8f0",
+    difficulty: 1,
+    explanation: "Ein Igel rollt sich zusammen, WENN Gefahr droht. SONST spaziert er gemütlich weiter. Computer treffen genauso Entscheidungen: WENN etwas wahr ist, mach dies. SONST mach das. Das nennt man eine Bedingung — wie eine Weggabelung!",
+    activity: "Entscheidungs-Spaziergang: Bei jeder Kreuzung stellt ihr eine Wenn-Dann-Frage. „WENN wir einen Hund sehen, gehen wir links. SONST gehen wir rechts.“ Schreibt eure Regeln vorher auf — wohin führt euch euer Programm? 🚶‍♂️",
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fde8f0"/><ellipse cx="50" cy="55" rx="22" ry="18" fill="#e84393"/><ellipse cx="50" cy="60" rx="18" ry="12" fill="#d63384"/><circle cx="44" cy="50" r="2" fill="#fff"/><circle cx="44" cy="50" r="1" fill="#222"/><circle cx="56" cy="50" r="2" fill="#fff"/><circle cx="56" cy="50" r="1" fill="#222"/><ellipse cx="50" cy="54" rx="2.5" ry="2" fill="#222"/><path d="M30 42 L28 32" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M35 38 L32 28" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M42 36 L40 26" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M50 35 L50 25" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M58 36 L60 26" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M65 38 L68 28" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M70 42 L72 32" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><text x="50" y="82" text-anchor="middle" font-size="7" font-weight="bold" fill="#e84393">WENN ? DANN !</text></svg>`
+  },
+  {
+    id: 5,
+    name: "Funktions-Fuchs",
+    concept: "Funktion — Trick im Ärmel",
+    color: "#fd79a8",
+    colorLight: "#fef0f5",
+    difficulty: 2,
+    explanation: "Ein Fuchs hat viele schlaue Tricks. Wenn er einen Trick oft braucht, gibt er ihm einen Namen — dann muss er sich nicht jedes Mal alles neu überlegen. Eine Funktion ist genau das: Eine Gruppe von Anweisungen mit einem Namen. Du rufst sie auf und sie macht ihren Job!",
+    activity: "Erfindet 3 „Funktionen“ für euren Alltag: z.B. FRÜHSTÜCK() = Teller holen + Müsli rein + Milch drauf + Löffel nehmen. Schreibt sie auf Karten. Dann ruft einer nur den Namen und der andere führt alle Schritte aus! 📋“,
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fef0f5"/><polygon points="35,65 50,35 65,65" fill="#fd79a8"/><polygon points="38,62 50,40 62,62" fill="#e8608a"/><circle cx="45" cy="54" r="2.5" fill="#fff"/><circle cx="45" cy="54" r="1.2" fill="#222"/><circle cx="55" cy="54" r="2.5" fill="#fff"/><circle cx="55" cy="54" r="1.2" fill="#222"/><ellipse cx="50" cy="59" rx="2" ry="1.5" fill="#222"/><path d="M35 65 Q42 62 44 68" fill="#fd79a8"/><path d="M65 65 Q58 62 56 68" fill="#fd79a8"/><polygon points="35,40 30,25 42,38" fill="#fd79a8"/><polygon points="65,40 70,25 58,38" fill="#fd79a8"/><path d="M46 61 Q50 63 54 61" stroke="#fff" stroke-width=".8" fill="none"/></svg>`
+  },
+  {
+    id: 6,
+    name: "Bug-Biene",
+    concept: "Debugging — Fehler finden",
+    color: "#fdcb6e",
+    colorLight: "#fef9e7",
+    difficulty: 2,
+    explanation: "Bienen kontrollieren jede Wabe genau — stimmt etwas nicht, wird es repariert. „Bug“ heißt auf Englisch Käfer, und so nennt man auch Fehler im Programm. Debugging bedeutet: den Fehler suchen, finden und beheben. Wie ein Detektiv! 🔍“,
+    activity: "Fehler-Suchspiel: Einer schreibt eine Anleitung mit 3 versteckten Fehlern (z.B. „Zieh die Schuhe an. Dann zieh die Socken an.“ — falsche Reihenfolge!). Der andere muss alle 3 Bugs finden und korrigieren! 🐛",
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fef9e7"/><ellipse cx="50" cy="55" rx="15" ry="18" fill="#fdcb6e"/><ellipse cx="50" cy="55" rx="15" ry="18" fill="none" stroke="#f39c12" stroke-width="1.5"/><line x1="35" y1="48" x2="65" y2="48" stroke="#f39c12" stroke-width="1.2"/><line x1="35" y1="55" x2="65" y2="55" stroke="#f39c12" stroke-width="1.2"/><line x1="35" y1="62" x2="65" y2="62" stroke="#f39c12" stroke-width="1.2"/><ellipse cx="50" cy="38" rx="10" ry="9" fill="#fdcb6e"/><circle cx="45" cy="36" r="2.5" fill="#fff"/><circle cx="45" cy="36" r="1.2" fill="#222"/><circle cx="55" cy="36" r="2.5" fill="#fff"/><circle cx="55" cy="36" r="1.2" fill="#222"/><path d="M47 40 Q50 42 53 40" stroke="#222" stroke-width=".8" fill="none"/><path d="M34 45 Q25 40 22 45" stroke="#fdcb6e" stroke-width="3" fill="none"/><path d="M66 45 Q75 40 78 45" stroke="#fdcb6e" stroke-width="3" fill="none"/><ellipse cx="30" cy="32" rx="8" ry="5" fill="none" stroke="#ddd" stroke-width="1" stroke-dasharray="2" transform="rotate(-20,30,32)"/><ellipse cx="70" cy="32" rx="8" ry="5" fill="none" stroke="#ddd" stroke-width="1" stroke-dasharray="2" transform="rotate(20,70,32)"/><circle cx="44" cy="33" r=".8" fill="#222"/><circle cx="56" cy="33" r=".8" fill="#222"/><text x="50" y="82" text-anchor="middle" font-size="6" fill="#e17055">🔍 Bug found!</text></svg>`
+  },
+  {
+    id: 7,
+    name: "Array-Ameise",
+    concept: "Array — Geordnete Liste",
+    color: "#e17055",
+    colorLight: "#fef0ec",
+    difficulty: 2,
+    explanation: "Ameisen laufen in einer ordentlichen Reihe — jede hat ihren festen Platz: die Erste, die Zweite, die Dritte. Ein Array ist genau so: Eine nummerierte Liste von Dingen. Du kannst sagen: „Gib mir das 3. Element!“ und bekommst es sofort.“,
+    activity: "Baut eine Ameisen-Straße! Legt 8 Spielsachen in eine Reihe und nummeriert sie (0–7, wie echte Arrays!). Dann ruft: „Element 3!“ — welches Spielzeug ist das? „Tausche Element 1 und Element 5!“ Was passiert? 🐜",
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fef0ec"/><g transform="translate(15,50)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[0]</text></g><g transform="translate(30,45)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[1]</text></g><g transform="translate(45,42)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[2]</text></g><g transform="translate(60,45)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[3]</text></g><g transform="translate(75,50)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[4]</text></g><path d="M20 68 Q40 72 60 68 Q80 64 85 68" stroke="#e17055" stroke-width="1" fill="none" stroke-dasharray="3"/></svg>`
+  },
+  {
+    id: 8,
+    name: "Boolean-Bär",
+    concept: "Boolean — Wahr oder Falsch",
+    color: "#0984e3",
+    colorLight: "#e8f4fd",
+    difficulty: 2,
+    explanation: "Ein Bär kennt nur zwei Dinge: Winterschlaf oder wach. An oder aus. Ja oder nein. Das ist ein Boolean! Computer denken genauso in Wahr und Falsch. „Regnet es?“ → Wahr! → Regenschirm mitnehmen. „Regnet es?“ → Falsch! → Sonnenbrille aufsetzen.“,
+    activity: "Wahr-oder-Falsch-Kette: Stellt euch abwechselnd Aussagen. „Der Himmel ist blau?“ → WAHR! „Fische können fliegen?“ → FALSCH! Dann kombiniert: „WENN (hungrig = WAHR) UND (Kühlschrank voll = WAHR) DANN essen!“ 🐻",
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e8f4fd"/><ellipse cx="50" cy="52" rx="20" ry="22" fill="#0984e3"/><circle cx="38" cy="34" r="7" fill="#0984e3"/><circle cx="62" cy="34" r="7" fill="#0984e3"/><circle cx="38" cy="34" r="4" fill="#0770c2"/><circle cx="62" cy="34" r="4" fill="#0770c2"/><circle cx="44" cy="46" r="3.5" fill="#fff"/><circle cx="44" cy="46" r="1.8" fill="#222"/><circle cx="56" cy="46" r="3.5" fill="#fff"/><circle cx="56" cy="46" r="1.8" fill="#222"/><ellipse cx="50" cy="52" rx="3.5" ry="2.5" fill="#222"/><path d="M45 58 Q50 62 55 58" stroke="#fff" stroke-width="1.2" fill="none"/><text x="30" y="80" font-size="8" font-weight="bold" fill="#00b894">JA</text><text x="60" y="80" font-size="8" font-weight="bold" fill="#d63031">NEIN</text></svg>`
+  },
+  {
+    id: 9,
+    name: "Algorithmus-Adler",
+    concept: "Algorithmus — Der Plan",
+    color: "#00cec9",
+    colorLight: "#e8fffe",
+    difficulty: 3,
+    explanation: "Ein Adler jagt nicht planlos — er hat eine Strategie: hoch fliegen, Beute erspähen, Sturzflug, zupacken. Das ist sein Algorithmus! Ein Algorithmus ist ein Schritt-für-Schritt-Plan, um ein Problem zu lösen. Wie ein Rezept, nur für alles!",
+    activity: "Schreibt einen Algorithmus für „das perfekte Butterbrot“: 1) Brot nehmen, 2) Butter holen, 3) Messer nehmen… Wie viele Schritte braucht ihr? Dann: Kann jemand nur mit eurer Anleitung das Brot machen, ohne etwas zu wissen? Testet es! 🥪“,
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e8fffe"/><path d="M50 30 L30 60 Q50 55 70 60 Z" fill="#00cec9"/><path d="M50 30 L40 50 Q50 48 60 50 Z" fill="#00b5b2"/><circle cx="44" cy="45" r="2.5" fill="#fff"/><circle cx="44" cy="45" r="1.2" fill="#222"/><circle cx="56" cy="45" r="2.5" fill="#fff"/><circle cx="56" cy="45" r="1.2" fill="#222"/><polygon points="50,48 47,53 53,53" fill="#f39c12"/><path d="M30 60 L15 55" stroke="#00cec9" stroke-width="3" stroke-linecap="round"/><path d="M70 60 L85 55" stroke="#00cec9" stroke-width="3" stroke-linecap="round"/><path d="M15 55 L10 50" stroke="#00cec9" stroke-width="2" stroke-linecap="round"/><path d="M85 55 L90 50" stroke="#00cec9" stroke-width="2" stroke-linecap="round"/><text x="50" y="78" text-anchor="middle" font-size="5" fill="#00b5b2">1→2→3→✓</text></svg>`
+  },
+  {
+    id: 10,
+    name: "Pattern-Pinguin",
+    concept: "Pattern — Muster erkennen",
+    color: "#2d3436",
+    colorLight: "#f0f0f0",
+    difficulty: 3,
+    explanation: "Pinguine watscheln in einem gleichmäßigen Muster: links, rechts, links, rechts. Programmierer suchen überall Muster! Wenn du ein Muster erkennst, kannst du vorhersagen was als Nächstes kommt — und du kannst Abkürzungen nehmen, statt alles einzeln zu machen.",
+    activity: "Muster-Detektive: Legt Knöpfe, Murmeln oder Stifte in Reihen mit Mustern (z.B. rot-blau-rot-blau-?). Einer legt, der andere errät was kommt. Dann: Muster im Alltag suchen! Fliesen, Gardinen, Treppengeländer — überall verstecken sich Patterns! 🔮",
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f0f0f0"/><ellipse cx="50" cy="55" rx="16" ry="20" fill="#2d3436"/><ellipse cx="50" cy="58" rx="12" ry="14" fill="#fff"/><circle cx="44" cy="46" r="2.5" fill="#fff"/><circle cx="44" cy="46" r="1.2" fill="#222"/><circle cx="56" cy="46" r="2.5" fill="#fff"/><circle cx="56" cy="46" r="1.2" fill="#222"/><polygon points="50,50 46,54 54,54" fill="#fdcb6e"/><path d="M34 55 Q28 58 32 65" fill="#2d3436"/><path d="M66 55 Q72 58 68 65" fill="#2d3436"/><ellipse cx="42" cy="73" rx="5" ry="3" fill="#fdcb6e"/><ellipse cx="58" cy="73" rx="5" ry="3" fill="#fdcb6e"/><g transform="translate(18,20)"><circle r="3" fill="#e84393"/><circle cx="8" r="3" fill="#0984e3"/><circle cx="16" r="3" fill="#e84393"/><circle cx="24" r="3" fill="#0984e3"/><circle cx="32" r="3" fill="none" stroke="#aaa" stroke-width="1" stroke-dasharray="2"/></g></svg>`
+  },
+  {
+    id: 11,
+    name: "Rekursions-Rabe",
+    concept: "Rekursion — Spiegelsaal",
+    color: "#636e72",
+    colorLight: "#f0f2f2",
+    difficulty: 3,
+    explanation: "Stell dir einen Raben vor, der eine Geschichte erzählt — über einen Raben, der eine Geschichte erzählt — über einen Raben… Das ist Rekursion! Etwas, das sich selbst wiederholt, aber jedes Mal ein bisschen kleiner wird, bis es aufhört. Wie russische Puppen! 🪆",
+    activity: "Malt ein Bild IN einem Bild: Zeichnet einen Bilderrahmen. Darin einen kleineren Bilderrahmen. Darin noch einen kleineren! Wie viele Ebenen schafft ihr? Und: Wann müsst ihr aufhören? (Das ist die „Abbruchbedingung“!) 🖼️“,
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f0f2f2"/><g transform="translate(50,48)"><ellipse rx="16" ry="14" fill="#636e72"/><ellipse rx="10" ry="8" cy="3" fill="#555"/><circle cx="-4" cy="-3" r="2.5" fill="#fff"/><circle cx="-4" cy="-3" r="1.2" fill="#222"/><circle cx="5" cy="-3" r="2.5" fill="#fff"/><circle cx="5" cy="-3" r="1.2" fill="#222"/><polygon points="0,1 -3,5 3,5" fill="#2d3436"/></g><rect x="60" y="52" width="20" height="16" rx="2" fill="none" stroke="#aaa" stroke-width="1"/><rect x="63" y="55" width="14" height="10" rx="1.5" fill="none" stroke="#bbb" stroke-width=".8"/><rect x="65.5" y="57.5" width="9" height="5" rx="1" fill="none" stroke="#ccc" stroke-width=".6"/><path d="M32 42 Q22 35 20 42 Q18 50 28 48" fill="#636e72"/><path d="M68 42 Q78 35 80 42 Q82 50 72 48" fill="#636e72"/></svg>`
+  },
+  {
+    id: 12,
+    name: "Event-Eule",
+    concept: "Event — Warte auf Zeichen",
+    color: "#a29bfe",
+    colorLight: "#f3f1ff",
+    difficulty: 3,
+    explanation: "Eine Eule sitzt still auf ihrem Ast und wartet. Raschelt etwas? Sofort reagiert sie! Das ist ein Event — ein Ereignis, auf das ein Programm wartet. Wenn du auf deinem Handy einen Knopf drückst, ist das ein Event. Der Computer hört: „Klick!“ und weiß, was er tun soll.“,
+    activity: "Event-Spiel: Einer ist der „Computer“, der andere löst Events aus. Vereinbart Regeln: „WENN ich klatsche → du springst. WENN ich pfeife → du drehst dich. WENN ich stampfe → du bleibst stehen.“ Los geht's — wie schnell reagiert euer Computer? ⚡",
+    svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f3f1ff"/><ellipse cx="50" cy="55" rx="18" ry="20" fill="#a29bfe"/><circle cx="42" cy="48" r="7" fill="#fff" stroke="#a29bfe" stroke-width="1"/><circle cx="58" cy="48" r="7" fill="#fff" stroke="#a29bfe" stroke-width="1"/><circle cx="42" cy="48" r="3" fill="#222"/><circle cx="58" cy="48" r="3" fill="#222"/><circle cx="43" cy="47" r="1" fill="#fff"/><circle cx="59" cy="47" r="1" fill="#fff"/><polygon points="50,53 47,57 53,57" fill="#f39c12"/><path d="M32 43 Q28 35 35 38" stroke="#a29bfe" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M68 43 Q72 35 65 38" stroke="#a29bfe" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M38 68 L36 75" stroke="#f39c12" stroke-width="2"/><path d="M62 68 L64 75" stroke="#f39c12" stroke-width="2"/><circle cx="75" cy="30" r="3" fill="none" stroke="#fdcb6e" stroke-width="1.5"/><line x1="75" y1="24" x2="75" y2="22" stroke="#fdcb6e" stroke-width="1"/><line x1="75" y1="36" x2="75" y2="38" stroke="#fdcb6e" stroke-width="1"/><line x1="69" y1="30" x2="67" y2="30" stroke="#fdcb6e" stroke-width="1"/><line x1="81" y1="30" x2="83" y2="30" stroke="#fdcb6e" stroke-width="1"/></svg>`
+  }
+];
+
+const diffLabel = d => ['', '⭐ Starter', '⭐⭐ Entdecker', '⭐⭐⭐ Profi'][d];
+
+function renderCards(subset) {
+  const data = subset || CARDS;
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = data.map(c => `
+    <div class="card">
+      <div class="card-top" style="background:${c.colorLight}">
+        <span class="card-number">#${c.id}</span>
+        <span class="card-badge">${diffLabel(c.difficulty)}</span>
+        ${c.svg}
+      </div>
+      <div class="card-body">
+        <h2 style="color:${c.color}">${c.name}</h2>
+        <div class="concept">${c.concept}</div>
+        <div class="explanation">${c.explanation}</div>
+        <div class="activity">
+          <div class="activity-label" style="color:${c.color}">🎮 Aktivität</div>
+          ${c.activity}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleGuide() {
+  const s = document.getElementById('guideSection');
+  s.classList.toggle('visible');
+  if (s.classList.contains('visible')) s.scrollIntoView({behavior:'smooth'});
+}
+
+function showFreebie() {
+  const freeIds = [1, 2, 4]; // Sequenz, Loop, If — die besten Starter
+  const subset = CARDS.filter(c => freeIds.includes(c.id));
+  renderCards(subset);
+  document.getElementById('cardGrid').scrollIntoView({behavior:'smooth'});
+  setTimeout(() => {
+    if (confirm('Freebie-Vorschau: 3 Karten (Sequenz-Schlange, Loop-Löwe, If-Igel).\n\nAlle 12 Karten anzeigen?')) {
+      renderCards();
+    }
+  }, 300);
+}
+
+// Init
+renderCards();
+</script>
+</body>
+</html>
