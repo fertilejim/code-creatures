@@ -155,11 +155,12 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); line
     page-break-inside: avoid; break-inside: avoid;
     margin-bottom: 8mm;
     page-break-after: always;
+    overflow: visible !important;
   }
   .card:last-child { page-break-after: auto; }
   .card:hover { transform: none; }
-  .card-top { height: 45mm; }
-  .card-top svg { width: 35mm; height: 35mm; }
+  .card-top { height: 45mm; overflow: visible !important; }
+  .card-top svg { width: 35mm; height: 35mm; filter: none !important; display: block !important; visibility: visible !important; overflow: visible !important; }
   .card-body { padding: 4mm 5mm; }
   .card-body h2 { font-size: 14pt; }
   .card-body .concept { font-size: 9pt; margin-bottom: 2mm; }
