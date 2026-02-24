@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Creatures — Starter Set vs. Der Bug-König</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --shadow: 0 2px 12px rgba(0,0,0,.12);
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --bg: #f4f0e8; --text: #2d2a26;
+  --bug-red: #d63031; --bug-dark: #2d1b1b;
+}
+body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.45; }
+
+/* ===== INTRO CARD ===== */
+.intro-card {
+  max-width: 700px; margin: 2rem auto; background: linear-gradient(135deg, #2d1b1b 0%, #4a1a1a 100%);
+  border-radius: 16px; padding: 2.5rem; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.3);
+  text-align: center;
+}
+.intro-card h1 { font-size: 2rem; margin-bottom: .3rem; }
+.intro-card .subtitle { font-size: 1.1rem; opacity: .8; margin-bottom: 1.5rem; }
+.intro-card .story { font-size: 1rem; line-height: 1.7; text-align: left; margin-bottom: 1.5rem;
+  background: rgba(255,255,255,.08); border-radius: 10px; padding: 1.2rem; }
+.intro-card .rules { text-align: left; font-size: .95rem; line-height: 1.7; }
+.intro-card .rules li { margin-bottom: .4rem; }
+.intro-card .rules strong { color: #ff6b6b; }
+.bug-track { display: flex; gap: .8rem; justify-content: center; margin: 1.5rem 0 .5rem;
+  font-size: 1.8rem; }
+.bug-track .bug-slot { width: 48px; height: 48px; border-radius: 50%; border: 3px dashed rgba(255,255,255,.3);
+  display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+.bug-track .bug-slot.filled { border-color: #ff6b6b; background: rgba(255,0,0,.15); }
+
+/* ===== CARD GRID ===== */
+.card-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem; padding: 1.5rem 2rem 3rem; max-width: 1200px; margin: 0 auto;
+}
+.card {
+  background: #fff; border-radius: 14px; overflow: hidden;
+  box-shadow: var(--shadow); display: flex; flex-direction: column; break-inside: avoid;
+}
+.card:hover { transform: translateY(-3px); transition: transform .15s; }
+.card-top {
+  position: relative; height: 160px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.card-top svg { width: 110px; height: 110px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.1)); }
+.card-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(255,255,255,.85); backdrop-filter: blur(4px);
+  font-size: .65rem; font-weight: 700; padding: 3px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: .04em; color: #555;
+}
+.card-number {
+  position: absolute; top: 10px; left: 12px;
+  font-size: .75rem; font-weight: 800; color: rgba(255,255,255,.7);
+}
+.card-body { padding: 1rem 1.1rem 1.2rem; flex: 1; display: flex; flex-direction: column; }
+.card-body h2 { font-size: 1.15rem; font-weight: 800; margin-bottom: .15rem; }
+.card-body .concept {
+  font-size: .78rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .04em; margin-bottom: .6rem; opacity: .55;
+}
+.card-body .explanation { font-size: .88rem; line-height: 1.55; color: #444; margin-bottom: .7rem; flex: 1; }
+
+/* Bug-König Story-Line on each card */
+.bug-line {
+  background: linear-gradient(90deg, #fff0f0, #fff8f8); border-left: 3px solid var(--bug-red);
+  padding: .5rem .7rem; border-radius: 0 8px 8px 0; margin-bottom: .7rem;
+  font-size: .82rem; color: #8b1a1a; font-style: italic;
+}
+.bug-line::before { content: "🐛 "; }
+
+.card-body .activity {
+  background: #f8f6f2; border-radius: 8px; padding: .65rem .8rem; font-size: .84rem; line-height: 1.5;
+  margin-bottom: .6rem;
+}
+.activity-label {
+  font-weight: 700; font-size: .7rem; text-transform: uppercase;
+  letter-spacing: .04em; margin-bottom: .25rem; display: flex; align-items: center; gap: .3rem;
+}
+
+/* Challenge / win condition */
+.challenge {
+  background: linear-gradient(90deg, #f0fff0, #f8fff8); border-left: 3px solid #00b894;
+  padding: .5rem .7rem; border-radius: 0 8px 8px 0; font-size: .82rem; color: #1a5c3a;
+}
+.challenge::before { content: "🏆 "; }
+.challenge .fail { display: block; margin-top: .3rem; color: #8b1a1a; font-size: .78rem; }
+.challenge .fail::before { content: "💀 "; }
+
+/* ===== ADVENTURE MAP ===== */
+.adventure-map {
+  max-width: 800px; margin: 2rem auto; background: #fff; border-radius: 16px;
+  padding: 2rem; box-shadow: var(--shadow); text-align: center;
+}
+.adventure-map h2 { font-size: 1.5rem; color: #6c5ce7; margin-bottom: .5rem; }
+.adventure-map .map-subtitle { color: #888; margin-bottom: 1.5rem; font-size: .9rem; }
+.map-path {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin-bottom: 1.5rem;
+}
+.map-station {
+  width: 56px; height: 56px; border-radius: 50%; border: 3px solid #ddd;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; font-weight: 800; color: #888; position: relative;
+  background: #fafafa;
+}
+.map-station .station-num { font-size: 1.1rem; }
+.map-station-boss {
+  width: 70px; height: 70px; border-radius: 50%;
+  border: 3px solid var(--bug-red); background: #fff0f0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+}
+.map-arrow { display: flex; align-items: center; color: #ccc; font-size: 1.2rem; }
+.map-legend { font-size: .85rem; color: #666; line-height: 1.6; }
+
+/* ===== GUIDE ===== */
+.guide-section { max-width: 780px; margin: 2rem auto 3rem; padding: 2rem; }
+.guide-section h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 1rem; color: #6c5ce7; }
+.guide-section h3 { font-size: 1.1rem; font-weight: 700; margin: 1.2rem 0 .4rem; }
+.guide-section p, .guide-section li { font-size: .95rem; line-height: 1.6; color: #444; }
+.guide-section ul { padding-left: 1.4rem; }
+.guide-section li { margin-bottom: .3rem; }
+.guide-box { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); }
+.tip-box {
+  background: #fff8e1; border-left: 4px solid #ffc107;
+  padding: .8rem 1rem; border-radius: 0 8px 8px 0; margin: 1rem 0; font-size: .9rem;
+}
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: #fff; font-size: 11pt; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+  
+  .intro-card {
+    break-after: page; background: #fff !important; color: #222 !important;
+    border: 2px solid #6c5ce7; padding: 15mm;
+  }
+  .intro-card h1 { color: #6c5ce7 !important; -webkit-text-fill-color: #6c5ce7 !important; }
+  .intro-card .subtitle { color: #d63031 !important; }
+  .intro-card .story { background: #f8f6f2 !important; color: #333 !important; border: 1px solid #ddd; }
+  .intro-card .rules { color: #333 !important; }
+  .intro-card .rules strong { color: #d63031 !important; }
+  .intro-card .bug-track .bug-slot { border-color: #d63031 !important; }
+
+  .card-grid {
+    display: block; padding: 0; max-width: none;
+  }
+  .card {
+    box-shadow: none; border: .4mm solid #ccc; border-radius: 3mm;
+    page-break-inside: avoid; break-inside: avoid;
+    margin-bottom: 8mm;
+    page-break-after: always;
+  }
+  .card:last-child { page-break-after: auto; }
+  .card:hover { transform: none; }
+  .card-top { height: 45mm; }
+  .card-top svg { width: 35mm; height: 35mm; }
+  .card-body { padding: 4mm 5mm; }
+  .card-body h2 { font-size: 14pt; }
+  .card-body .concept { font-size: 9pt; margin-bottom: 2mm; }
+  .card-body .explanation { font-size: 10pt; line-height: 1.45; margin-bottom: 3mm; }
+  .bug-line { font-size: 9.5pt; padding: 2.5mm 3mm; margin-bottom: 3mm; }
+  .card-body .activity { padding: 3mm 4mm; font-size: 10pt; line-height: 1.45; margin-bottom: 3mm; }
+  .activity-label { font-size: 8pt; }
+  .challenge { font-size: 9.5pt; padding: 2.5mm 3mm; line-height: 1.4; }
+  .challenge .fail { font-size: 9pt; }
+  .card-number { font-size: 9pt; top: 3mm; left: 4mm; color: rgba(0,0,0,.3); }
+  .card-badge { font-size: 7pt; top: 3mm; right: 4mm; padding: 1.5mm 3mm; }
+
+  .guide-section { page-break-before: always; }
+  .adventure-map { page-break-before: always; }
+  footer { font-size: 8pt; }
+
+  @page { size: A4 portrait; margin: 12mm; }
+}
+
+footer { text-align: center; padding: 2rem 1rem; font-size: .8rem; color: #999; }
+</style>
+</head>
+<body>
+
+<!-- ===== INTRO-KARTE: DIE STORY ===== -->
+<div class="intro-card">
+  <h1>🦁 Code Creatures</h1>
+  <div class="subtitle">vs. Der Bug-König 🐛👑</div>
+  
+  <div class="story">
+    Im Land der Code Creatures lebten zwölf kluge Tiere friedlich zusammen. Jedes Tier beherrschte eine besondere Fähigkeit — Schleifen drehen, Muster erkennen, Entscheidungen treffen. Doch eines Tages tauchte der <strong>Bug-König</strong> auf: ein fieser Käfer, der überall Fehler und Chaos verbreitet! Er hat sich in jede Fähigkeit der Creatures eingeschlichen und alles durcheinander gebracht. Nur ihr könnt die Code Creatures retten — indem ihr ihre Aufgaben löst und die Bugs vertreibt. Aber Vorsicht: Für jede Aufgabe, die ihr nicht schafft, wird der Bug-König stärker!
+  </div>
+
+  <div class="rules">
+    <strong>So spielt ihr:</strong>
+    <ol>
+      <li>Legt <strong>5 Münzen, Knöpfe oder Steine</strong> in die Mitte — das sind die Bug-Chips</li>
+      <li>Zieht eine Karte und lest sie zusammen</li>
+      <li>Macht die Aktivität und versucht die <strong style="color:#4ecdc4">🏆 Challenge</strong> zu bestehen</li>
+      <li>Challenge geschafft? → Creature befreit! Weiter zur nächsten Karte! 🎉</li>
+      <li>Challenge nicht geschafft? → Der Bug-König klaut sich einen Bug-Chip! 🐛</li>
+      <li><strong style="color:#ff6b6b">Sind alle 5 Bug-Chips weg, hat der Bug-König gewonnen!</strong></li>
+      <li>Schafft ihr alle 12 Karten, bevor er 5 Chips hat? Dann habt IHR gewonnen! 💪</li>
+    </ol>
+  </div>
+
+  <div class="bug-track">
+    <div class="bug-slot filled">🐛</div>
+    <div class="bug-slot filled">🐛</div>
+    <div class="bug-slot filled">🐛</div>
+    <div class="bug-slot filled">🐛</div>
+    <div class="bug-slot filled">🐛</div>
+  </div>
+  <div style="opacity:.6; font-size:.85rem; margin-top:.3rem;">Alle 5 weg = Game Over!</div>
+</div>
+
+<!-- ===== DIE 12 KARTEN ===== -->
+<div class="card-grid">
+
+<!-- KARTE 1: Sequenz-Schlange -->
+<div class="card">
+  <div class="card-top" style="background:#e8f8f5">
+    <span class="card-number">#1</span>
+    <span class="card-badge">⭐ Starter</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e8f8f5"/><path d="M25 60 Q35 40 50 55 Q65 70 75 50 Q85 30 80 25" stroke="#00b894" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="80" cy="25" r="6" fill="#00b894"/><circle cx="76" cy="23" r="1.5" fill="#fff"/><circle cx="83" cy="23" r="1.5" fill="#fff"/><path d="M78 28 Q80 30 82 28" stroke="#fff" stroke-width=".8" fill="none"/><path d="M25 58 L22 62 M25 58 L28 62" stroke="#00b894" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#00b894">Sequenz-Schlange</h2>
+    <div class="concept">Sequenz — Reihenfolge</div>
+    <div class="bug-line">Der Bug-König hat die Schritte durcheinander gewirbelt! Könnt ihr die richtige Reihenfolge wiederherstellen?</div>
+    <div class="explanation">Stell dir vor, du baust einen Turm aus Bauklötzen. Du musst den ersten Klotz hinlegen, bevor du den zweiten draufsetzt — sonst fällt alles um! Genau so arbeitet ein Computer: Er macht immer einen Schritt nach dem anderen, in einer festen Reihenfolge. Erst Schritt 1, dann Schritt 2, dann Schritt 3. Diese feste Reihenfolge nennt man eine <strong>Sequenz</strong>. Die Sequenz-Schlange macht es vor: Sie schlängelt sich Glied für Glied vorwärts — niemals rückwärts, niemals durcheinander.</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#00b894">🎮 Aktivität — Verrücktes Rezept</div>
+      Schreibt zusammen ein Rezept für eine einfache Aufgabe — zum Beispiel: Zähne putzen! Jeder einzelne Schritt kommt auf einen eigenen Zettel: (1) Zahnbürste nehmen, (2) Zahnpasta drauf, (3) Mund auf, (4) putzen, (5) ausspülen. Legt die Zettel in die richtige Reihenfolge. Dann mischt die Zettel und lest sie in der neuen Reihenfolge vor — was passiert, wenn ihr zuerst ausspült und dann erst die Zahnpasta draufmacht? 😂
+      <br><em>💡 Ideen: Zähne putzen, Schulranzen packen, ein Spiegelei braten, den Hund füttern</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Schreibt ein Rezept mit mindestens 6 Schritten. Ein Mitspieler mischt sie. Schafft ihr es, alle Schritte in unter 60 Sekunden wieder richtig zu sortieren?
+      <span class="fail">Bug-König gewinnt, wenn: Zwei oder mehr Schritte am Ende noch falsch liegen.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 2: Loop-Löwe -->
+<div class="card">
+  <div class="card-top" style="background:#fff3ee">
+    <span class="card-number">#2</span>
+    <span class="card-badge">⭐ Starter</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fff3ee"/><circle cx="50" cy="52" r="20" fill="#ff6b35"/><ellipse cx="50" cy="58" rx="12" ry="8" fill="#e05a2b"/><circle cx="43" cy="48" r="3" fill="#fff"/><circle cx="43" cy="48" r="1.5" fill="#222"/><circle cx="57" cy="48" r="3" fill="#fff"/><circle cx="57" cy="48" r="1.5" fill="#222"/><ellipse cx="50" cy="55" rx="3" ry="2" fill="#c0392b"/><path d="M44 60 Q50 65 56 60" stroke="#fff" stroke-width="1.2" fill="none"/><path d="M28 38 Q22 25 35 22 Q42 20 42 30" stroke="#e09040" stroke-width="5" fill="none"/><path d="M72 38 Q78 25 65 22 Q58 20 58 30" stroke="#e09040" stroke-width="5" fill="none"/><path d="M32 52 Q20 45 25 35" stroke="#e09040" stroke-width="5" fill="none"/><path d="M68 52 Q80 45 75 35" stroke="#e09040" stroke-width="5" fill="none"/><path d="M35 65 Q30 75 35 72" stroke="#e09040" stroke-width="4" fill="none"/><path d="M65 65 Q70 75 65 72" stroke="#e09040" stroke-width="4" fill="none"/><circle cx="42" cy="30" r="2" fill="#ff6b35"/><circle cx="58" cy="30" r="2" fill="#ff6b35"/></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#ff6b35">Loop-Löwe</h2>
+    <div class="concept">Schleife — Wiederholung</div>
+    <div class="bug-line">Der Bug-König hat die Schleifen-Maschine kaputt gemacht — sie weiß nicht mehr, wann sie stoppen soll! Repariert sie!</div>
+    <div class="explanation">Kennst du das, wenn ein Lieblingslied läuft und du es immer wieder hören willst? Du drückst auf Wiederholen — und es spielt nochmal und nochmal. Genau das ist eine <strong>Schleife</strong>! Der Loop-Löwe läuft jeden Tag die gleiche Runde durch sein Revier: am Fluss entlang, über den Hügel, am Baum vorbei — und dann wieder von vorn. Statt dem Computer hundert Mal das Gleiche zu sagen, sagst du einfach: Mach das 100 Mal! Es gibt zwei Arten: Bei der einen sagst du vorher, wie oft (z.B. 5 Mal klatschen). Bei der anderen läuft die Schleife, bis etwas Bestimmtes passiert (z.B. laufe, BIS du die Wand erreichst).</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#ff6b35">🎮 Aktivität — Klatschen-Maschine</div>
+      Einer ist der Programmierer, der andere ist der Computer. Der Programmierer gibt ein Muster vor: klatschen-stampfen-schnipsen. Dann sagt er: Wiederhole 5 Mal! Der Computer führt es genau 5 Mal aus. Das ist Schleife Nr. 1. Jetzt Schleife Nr. 2: Wiederhole klatschen-stampfen-schnipsen, BIS ich Stopp sage! Der Computer macht weiter, bis das Stopp-Wort kommt. Erfindet eigene Muster und probiert beide Schleifen-Arten. 🔁
+      <br><em>💡 Muster-Ideen: klatschen-stampfen, hüpfen-drehen-ducken, schnipsen-winken-klatschen-stampfen</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Der Programmierer gibt ein 4-teiliges Muster vor und sagt eine Anzahl (z.B. 4 Mal). Der Computer muss es fehlerfrei wiederholen — kein Schritt darf fehlen oder vertauscht sein!
+      <span class="fail">Bug-König gewinnt, wenn: Der Computer mehr als einen Fehler macht oder die falsche Anzahl Wiederholungen schafft.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 3: Variable-Vogel -->
+<div class="card">
+  <div class="card-top" style="background:#f0eeff">
+    <span class="card-number">#3</span>
+    <span class="card-badge">⭐ Starter</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f0eeff"/><ellipse cx="50" cy="55" rx="16" ry="14" fill="#6c5ce7"/><ellipse cx="50" cy="45" rx="10" ry="9" fill="#6c5ce7"/><circle cx="45" cy="43" r="2.5" fill="#fff"/><circle cx="45" cy="43" r="1.2" fill="#222"/><circle cx="55" cy="43" r="2.5" fill="#fff"/><circle cx="55" cy="43" r="1.2" fill="#222"/><polygon points="50,47 47,51 53,51" fill="#ffa502"/><path d="M32 50 Q20 40 28 55 Q30 58 35 55" fill="#5a4bd1"/><path d="M68 50 Q80 40 72 55 Q70 58 65 55" fill="#5a4bd1"/><rect x="40" y="70" rx="3" width="20" height="14" fill="#ffeaa7" stroke="#f39c12" stroke-width="1"/><text x="50" y="80" text-anchor="middle" font-size="6" font-weight="bold" fill="#e17055">x = 7</text></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#6c5ce7">Variable-Vogel</h2>
+    <div class="concept">Variable — Speicherbox</div>
+    <div class="bug-line">Der Bug-König hat die Beschriftungen von den Bechern gerissen! Wisst ihr noch, was wo drin ist?</div>
+    <div class="explanation">Stell dir einen Rucksack vor, auf dem dein Name steht. Der Rucksack ist immer derselbe — aber was drin ist, ändert sich jeden Tag: Heute ein Buch, morgen ein Apfel, übermorgen ein Kuscheltier. Genau so funktioniert eine <strong>Variable</strong>: Ein Behälter mit einem festen Namen, in den du verschiedene Dinge legen kannst. Der Variable-Vogel hat sein Nest — das ist seine Box. Mal liegt ein Wurm drin, mal ein Steinchen. Das Nest bleibt immer am gleichen Ort. Aber der Inhalt kann sich jederzeit ändern.</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#6c5ce7">🎮 Aktivität — Becher-Speicher</div>
+      Nehmt 3 Becher und klebt auf jeden einen Zettel mit einem Namen: Alter, Lieblingsfarbe, Punkte. Das sind eure Variablen! Legt in jeden Becher einen Zettel mit einem Wert: Alter = 7, Lieblingsfarbe = Blau, Punkte = 5. Fragt euch ab: Was steht in Punkte? Dann tauscht Werte: Punkte wird 10, Lieblingsfarbe wird Rot. Nehmt den alten Zettel raus, neuen rein. Die Variable bleibt, der Wert ändert sich! 🏆
+      <br><em>💡 Variablen-Ideen: Lieblingstier, Wetter-heute, Hunger-Level, Superhelden-Name</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Einer ändert nacheinander alle 3 Variablen jeweils 2 Mal (also 6 Änderungen). Dann werden alle Becher verdeckt. Schafft ihr es, aus dem Gedächtnis alle 3 aktuellen Werte richtig zu nennen?
+      <span class="fail">Bug-König gewinnt, wenn: Ihr mehr als einen Wert falsch habt.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 4: If-Igel -->
+<div class="card">
+  <div class="card-top" style="background:#fde8f0">
+    <span class="card-number">#4</span>
+    <span class="card-badge">⭐ Starter</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fde8f0"/><ellipse cx="50" cy="55" rx="22" ry="18" fill="#e84393"/><ellipse cx="50" cy="60" rx="18" ry="12" fill="#d63384"/><circle cx="44" cy="50" r="2" fill="#fff"/><circle cx="44" cy="50" r="1" fill="#222"/><circle cx="56" cy="50" r="2" fill="#fff"/><circle cx="56" cy="50" r="1" fill="#222"/><ellipse cx="50" cy="54" rx="2.5" ry="2" fill="#222"/><path d="M30 42 L28 32" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M35 38 L32 28" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M42 36 L40 26" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M50 35 L50 25" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M58 36 L60 26" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M65 38 L68 28" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><path d="M70 42 L72 32" stroke="#e84393" stroke-width="2.5" stroke-linecap="round"/><text x="50" y="82" text-anchor="middle" font-size="7" font-weight="bold" fill="#e84393">WENN ? DANN !</text></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#e84393">If-Igel</h2>
+    <div class="concept">Bedingung — Wenn-Dann</div>
+    <div class="bug-line">Der Bug-König hat die Wegweiser vertauscht — WENN und SONST zeigen in die falsche Richtung! Findet den richtigen Weg!</div>
+    <div class="explanation">Jeden Morgen triffst du Entscheidungen: WENN es regnet, DANN nimmst du den Regenschirm. SONST die Sonnenbrille. Das ist eine <strong>Bedingung</strong> — eine Wenn-Dann-Regel! Der If-Igel kennt das: WENN er Gefahr wittert, DANN rollt er sich zusammen. SONST spaziert er weiter. Computer treffen solche Entscheidungen tausendfach pro Sekunde. Wie eine Weggabelung: links oder rechts, je nachdem was passiert.</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#e84393">🎮 Aktivität — Entscheidungs-Spaziergang</div>
+      Schreibt vorher 5 Wenn-Dann-Regeln auf: z.B. WENN wir einen Hund sehen, DANN links. SONST rechts. Oder: WENN jemand eine rote Jacke trägt, DANN hüpfen. SONST klatschen. Dann lauft durch die Wohnung oder draußen und befolgt eure Regeln streng — genau wie ein Computer! Wohin führt euch euer Programm? 🚶‍♂️
+      <br><em>💡 Regel-Ideen: rotes Auto → links, Vogelgezwitscher → stehenbleiben, Fahrrad → 3x hüpfen</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Erstellt 5 Regeln und macht den Spaziergang. Am Ende muss jeder Spieler mindestens 3 der 5 Regeln aus dem Gedächtnis aufsagen können — denn ein Computer vergisst seine Regeln nie!
+      <span class="fail">Bug-König gewinnt, wenn: Ihr unterwegs eine Regel falsch anwendet oder am Ende weniger als 3 Regeln erinnert.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 5: Funktions-Fuchs -->
+<div class="card">
+  <div class="card-top" style="background:#fef0f5">
+    <span class="card-number">#5</span>
+    <span class="card-badge">⭐⭐ Entdecker</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fef0f5"/><polygon points="35,65 50,35 65,65" fill="#fd79a8"/><polygon points="38,62 50,40 62,62" fill="#e8608a"/><circle cx="45" cy="54" r="2.5" fill="#fff"/><circle cx="45" cy="54" r="1.2" fill="#222"/><circle cx="55" cy="54" r="2.5" fill="#fff"/><circle cx="55" cy="54" r="1.2" fill="#222"/><ellipse cx="50" cy="59" rx="2" ry="1.5" fill="#222"/><path d="M35 65 Q42 62 44 68" fill="#fd79a8"/><path d="M65 65 Q58 62 56 68" fill="#fd79a8"/><polygon points="35,40 30,25 42,38" fill="#fd79a8"/><polygon points="65,40 70,25 58,38" fill="#fd79a8"/><path d="M46 61 Q50 63 54 61" stroke="#fff" stroke-width=".8" fill="none"/></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#fd79a8">Funktions-Fuchs</h2>
+    <div class="concept">Funktion — Trick im Ärmel</div>
+    <div class="bug-line">Der Bug-König hat die Funktions-Namen gelöscht! Jetzt weiß niemand mehr, welcher Trick zu welchem Namen gehört!</div>
+    <div class="explanation">Stell dir vor, du musst jeden Morgen erklären, wie Frühstück geht: Teller holen, Müsli rein, Milch drauf, Löffel nehmen. Jeden. Morgen. Anstrengend! Stattdessen gibst du allem einen Namen: FRÜHSTÜCK! Ab jetzt sagst du nur das eine Wort und alle wissen, was zu tun ist. Genau das ist eine <strong>Funktion</strong>: Eine Gruppe von Anweisungen mit einem Namen. Der Funktions-Fuchs hat für jeden Trick einen Namen: VERSTECKEN!, JAGEN!, SCHLAFEN! — ein Wort, und er weiß was zu tun ist.</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#fd79a8">🎮 Aktivität — Alltags-Funktionen</div>
+      Erfindet 3 Funktionen für Alltags-Dinge. Schreibt jede auf eine Karte: Oben der Name (z.B. ZÄHNEPUTZEN), darunter alle Schritte: (1) Bürste nehmen, (2) Pasta drauf, (3) putzen, (4) spülen, (5) Becher weg. Gleich für ANZIEHEN und SCHULRANZEN PACKEN. Dann: Einer ruft nur den Namen — der andere führt alle Schritte aus, ohne auf die Karte zu schauen! 📋
+      <br><em>💡 Funktions-Ideen: FRÜHSTÜCK(), BETT-MACHEN(), HÄNDE-WASCHEN(), FAHRRAD-FERTIG()</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Jeder Spieler merkt sich eine Funktion mit mindestens 5 Schritten. Dann ruft der andere den Namen — und alle Schritte müssen in der richtigen Reihenfolge kommen, ohne nachzuschauen!
+      <span class="fail">Bug-König gewinnt, wenn: Mehr als ein Schritt fehlt oder die Reihenfolge durcheinander ist.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 6: Bug-Biene -->
+<div class="card">
+  <div class="card-top" style="background:#fef9e7">
+    <span class="card-number">#6</span>
+    <span class="card-badge">⭐⭐ Entdecker</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fef9e7"/><ellipse cx="50" cy="55" rx="15" ry="18" fill="#fdcb6e"/><ellipse cx="50" cy="55" rx="15" ry="18" fill="none" stroke="#f39c12" stroke-width="1.5"/><line x1="35" y1="48" x2="65" y2="48" stroke="#f39c12" stroke-width="1.2"/><line x1="35" y1="55" x2="65" y2="55" stroke="#f39c12" stroke-width="1.2"/><line x1="35" y1="62" x2="65" y2="62" stroke="#f39c12" stroke-width="1.2"/><ellipse cx="50" cy="38" rx="10" ry="9" fill="#fdcb6e"/><circle cx="45" cy="36" r="2.5" fill="#fff"/><circle cx="45" cy="36" r="1.2" fill="#222"/><circle cx="55" cy="36" r="2.5" fill="#fff"/><circle cx="55" cy="36" r="1.2" fill="#222"/><path d="M47 40 Q50 42 53 40" stroke="#222" stroke-width=".8" fill="none"/><path d="M34 45 Q25 40 22 45" stroke="#fdcb6e" stroke-width="3" fill="none"/><path d="M66 45 Q75 40 78 45" stroke="#fdcb6e" stroke-width="3" fill="none"/><text x="50" y="82" text-anchor="middle" font-size="6" fill="#e17055">🔍 Bug found!</text></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#fdcb6e">Bug-Biene</h2>
+    <div class="concept">Debugging — Fehler finden</div>
+    <div class="bug-line">Der Bug-König persönlich hat 3 fiese Fehler in eine Anleitung geschmuggelt. Findet und zerquetscht sie!</div>
+    <div class="explanation">Wusstest du, dass Fehler in Computerprogrammen Bug heißen — das englische Wort für Käfer? Vor langer Zeit hat eine echte Motte in einem Computer gesteckt und alles durcheinander gebracht! Seitdem heißt Fehler finden und reparieren <strong>Debugging</strong> — also Ent-Käfern! Die Bug-Biene kontrolliert jede Wabe im Bienenstock. Stimmt etwas nicht, wird es repariert. Genauso arbeiten Programmierer: Schritt für Schritt durchlesen, die Stelle finden wo es hakt, und den Fehler beheben. 🔍</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#fdcb6e">🎮 Aktivität — Fehler-Detektive</div>
+      Einer schreibt eine Anleitung mit genau 3 versteckten Fehlern. Zum Beispiel Anziehen am Morgen: (1) Aufstehen, (2) Schuhe anziehen, (3) Socken anziehen — falsche Reihenfolge! Oder: (1) Hose anziehen, (2) Hose nochmal anziehen — doppelt! Oder: (1) T-Shirt anziehen, (2) Fliegen lernen — unmöglich! Der andere muss alle 3 Bugs finden UND erklären, warum es falsch ist. 🐛
+      <br><em>💡 Anleitungs-Ideen: Morgens anziehen, Kuchen backen, einen Brief verschicken, Aquarium sauber machen</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Der Bug-Verstecker schreibt eine Anleitung mit mindestens 8 Schritten und genau 3 Bugs. Der Debugger hat 3 Minuten Zeit, alle 3 zu finden!
+      <span class="fail">Bug-König gewinnt, wenn: Nicht alle 3 Bugs in der Zeit gefunden werden — oder ein falscher Alarm dabei ist (ein Schritt als Bug markiert, der gar keiner war).</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 7: Array-Ameise -->
+<div class="card">
+  <div class="card-top" style="background:#fef0ec">
+    <span class="card-number">#7</span>
+    <span class="card-badge">⭐⭐ Entdecker</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#fef0ec"/><g transform="translate(15,50)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[0]</text></g><g transform="translate(30,45)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[1]</text></g><g transform="translate(45,42)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[2]</text></g><g transform="translate(60,45)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[3]</text></g><g transform="translate(75,50)"><ellipse cx="8" cy="0" rx="5" ry="4" fill="#e17055"/><circle cx="4" cy="-2" r="2.5" fill="#c0392b"/><circle cx="3" cy="-3" r=".8" fill="#fff"/><text x="8" y="10" text-anchor="middle" font-size="5" fill="#888">[4]</text></g><path d="M20 68 Q40 72 60 68 Q80 64 85 68" stroke="#e17055" stroke-width="1" fill="none" stroke-dasharray="3"/></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#e17055">Array-Ameise</h2>
+    <div class="concept">Array — Geordnete Liste</div>
+    <div class="bug-line">Der Bug-König hat die Nummern der Ameisen-Reihe durcheinander gewürfelt! Bringt die Ordnung zurück!</div>
+    <div class="explanation">Stell dir ein Regal mit nummerierten Fächern vor: Fach 0, Fach 1, Fach 2, Fach 3. In jedes Fach passt genau eine Sache. Und weil jedes Fach eine Nummer hat, kannst du sagen: Gib mir Fach 3! Das nennt man ein <strong>Array</strong> — eine nummerierte Liste. Die Array-Ameisen laufen in einer ordentlichen Reihe, jede hat ihren festen Platz. Wichtig: Computer fangen beim Zählen bei 0 an! Das erste Element ist also [0], nicht [1].</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#e17055">🎮 Aktivität — Ameisen-Straße</div>
+      Legt 8 Spielsachen in eine Reihe und nummeriert sie: [0], [1], [2] bis [7]. Schreibt die Nummern auf kleine Zettel. Dann spielt: Einer ruft Element 3! — der andere muss das richtige Spielzeug hochhalten (das vierte, weil wir bei 0 anfangen!). Dann: Tausche Element 1 und Element 5! Zum Schluss: Was passiert, wenn ihr ein neues Ding zwischen [2] und [3] einfügen wollt? Alles dahinter rückt weiter! 🐜
+      <br><em>💡 Reihen-Ideen: Kuscheltiere, Buntstifte, Schuhe, Legofiguren, Obst aus der Küche</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> 5 Blitz-Runden: Einer ruft eine Nummer, der andere zeigt das Element. Danach 2 Tausch-Befehle. Dann muss der Spieler 3 beliebige Positionen korrekt benennen — die neuen, nicht die alten!
+      <span class="fail">Bug-König gewinnt, wenn: Mehr als ein Element falsch zugeordnet wird.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 8: Boolean-Bär -->
+<div class="card">
+  <div class="card-top" style="background:#e8f4fd">
+    <span class="card-number">#8</span>
+    <span class="card-badge">⭐⭐ Entdecker</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e8f4fd"/><ellipse cx="50" cy="52" rx="20" ry="22" fill="#0984e3"/><circle cx="38" cy="34" r="7" fill="#0984e3"/><circle cx="62" cy="34" r="7" fill="#0984e3"/><circle cx="38" cy="34" r="4" fill="#0770c2"/><circle cx="62" cy="34" r="4" fill="#0770c2"/><circle cx="44" cy="46" r="3.5" fill="#fff"/><circle cx="44" cy="46" r="1.8" fill="#222"/><circle cx="56" cy="46" r="3.5" fill="#fff"/><circle cx="56" cy="46" r="1.8" fill="#222"/><ellipse cx="50" cy="52" rx="3.5" ry="2.5" fill="#222"/><path d="M45 58 Q50 62 55 58" stroke="#fff" stroke-width="1.2" fill="none"/><text x="30" y="80" font-size="8" font-weight="bold" fill="#00b894">JA</text><text x="60" y="80" font-size="8" font-weight="bold" fill="#d63031">NEIN</text></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#0984e3">Boolean-Bär</h2>
+    <div class="concept">Boolean — Wahr oder Falsch</div>
+    <div class="bug-line">Der Bug-König hat WAHR und FALSCH vertauscht — jetzt ist alles Lüge! Stellt die Wahrheit wieder her!</div>
+    <div class="explanation">Manche Fragen kann man nur mit Ja oder Nein beantworten. Hast du Hunger? Ja! Regnet es? Nein! Für Computer gibt es genau zwei Antworten: <strong>WAHR</strong> oder <strong>FALSCH</strong>. Das klingt einfach, aber es ist mächtig — denn du kannst Booleans kombinieren: WENN hungrig = WAHR UND Kühlschrank voll = WAHR, DANN essen. Nur wenn beides stimmt, passiert etwas! Mit ODER reicht eins: Hungrig ODER Durstig = eines davon reicht zum Küche-Gehen.</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#0984e3">🎮 Aktivität — Wahr-oder-Falsch-Maschine</div>
+      Einer stellt Aussagen, der andere antwortet blitzschnell nur WAHR oder FALSCH. Los: Der Himmel ist blau — WAHR! Fische können fliegen — FALSCH! Dann kombinieren: Es regnet UND ich habe eine Jacke an — beide müssen stimmen! Oder: Ich habe Hunger ODER Durst — eins reicht! Macht 5 Runden mit UND und 5 mit ODER. 🐻
+      <br><em>💡 Aussagen-Ideen: Katzen können schwimmen, 3+3=7, Bananen sind blau, Wolken sind aus Watte</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> 10 Blitz-Runden, abwechselnd UND und ODER. Jeder Spieler muss in unter 5 Sekunden antworten. Zählt die richtigen Antworten — ihr braucht zusammen mindestens 8 von 10!
+      <span class="fail">Bug-König gewinnt, wenn: Weniger als 8 richtige Antworten oder eine Antwort länger als 5 Sekunden braucht.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 9: Algorithmus-Adler -->
+<div class="card">
+  <div class="card-top" style="background:#e8fffe">
+    <span class="card-number">#9</span>
+    <span class="card-badge">⭐⭐⭐ Profi</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e8fffe"/><path d="M50 30 L30 60 Q50 55 70 60 Z" fill="#00cec9"/><path d="M50 30 L40 50 Q50 48 60 50 Z" fill="#00b5b2"/><circle cx="44" cy="45" r="2.5" fill="#fff"/><circle cx="44" cy="45" r="1.2" fill="#222"/><circle cx="56" cy="45" r="2.5" fill="#fff"/><circle cx="56" cy="45" r="1.2" fill="#222"/><polygon points="50,48 47,53 53,53" fill="#f39c12"/><path d="M30 60 L15 55" stroke="#00cec9" stroke-width="3" stroke-linecap="round"/><path d="M70 60 L85 55" stroke="#00cec9" stroke-width="3" stroke-linecap="round"/><path d="M15 55 L10 50" stroke="#00cec9" stroke-width="2" stroke-linecap="round"/><path d="M85 55 L90 50" stroke="#00cec9" stroke-width="2" stroke-linecap="round"/><text x="50" y="78" text-anchor="middle" font-size="5" fill="#00b5b2">1→2→3→✓</text></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#00cec9">Algorithmus-Adler</h2>
+    <div class="concept">Algorithmus — Der Plan</div>
+    <div class="bug-line">Der Bug-König behauptet, kein Plan kann perfekt sein! Beweist ihm das Gegenteil — schreibt einen Algorithmus, den selbst er nicht kaputt kriegt!</div>
+    <div class="explanation">Wenn du ein Puzzle machst, hast du eine Strategie: Erst Randstücke, dann Rahmen, dann Farben sortieren. Das ist dein <strong>Algorithmus</strong> — ein Schritt-für-Schritt-Plan, um ein Problem zu lösen! Der Algorithmus-Adler jagt nicht planlos: (1) Hoch fliegen, (2) Beute erspähen, (3) Sturzflug, (4) zupacken. Das Besondere: Ein guter Algorithmus funktioniert jedes Mal — egal wann man ihn befolgt.</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#00cec9">🎮 Aktivität — Das perfekte Butterbrot</div>
+      Schreibt einen Algorithmus für ein Butterbrot — aber JEDEN Schritt, auch die offensichtlichen: (1) Brot nehmen, (2) Scheibe schneiden, (3) auf Teller legen, (4) Butter holen, (5) Messer nehmen, (6) Butter aufs Messer, (7) streichen... Dann: Gebt eure Anleitung jemandem, der so tut als wüsste er nichts (wie ein Computer!). Steht da nicht auf den Teller legen, legt er die Butter auf den Tisch! 🥪
+      <br><em>💡 Algorithmus-Ideen: Butterbrot, Origami-Flieger falten, Tisch decken, ein Geschenk einpacken</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Schreibt den Algorithmus mit mindestens 8 Schritten. Dann führt ein anderer Spieler ihn WÖRTLICH aus — wie ein dummer Computer, der nur tut was da steht. Kein fehlender Schritt darf zum Scheitern führen!
+      <span class="fail">Bug-König gewinnt, wenn: Der Computer-Spieler einen fehlenden Schritt findet (z.B. Brot liegt nicht auf dem Teller, weil das nicht da stand).</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 10: Pattern-Pinguin -->
+<div class="card">
+  <div class="card-top" style="background:#f0f0f0">
+    <span class="card-number">#10</span>
+    <span class="card-badge">⭐⭐⭐ Profi</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f0f0f0"/><ellipse cx="50" cy="55" rx="16" ry="20" fill="#2d3436"/><ellipse cx="50" cy="58" rx="12" ry="14" fill="#fff"/><circle cx="44" cy="46" r="2.5" fill="#fff"/><circle cx="44" cy="46" r="1.2" fill="#222"/><circle cx="56" cy="46" r="2.5" fill="#fff"/><circle cx="56" cy="46" r="1.2" fill="#222"/><polygon points="50,50 46,54 54,54" fill="#fdcb6e"/><path d="M34 55 Q28 58 32 65" fill="#2d3436"/><path d="M66 55 Q72 58 68 65" fill="#2d3436"/><ellipse cx="42" cy="73" rx="5" ry="3" fill="#fdcb6e"/><ellipse cx="58" cy="73" rx="5" ry="3" fill="#fdcb6e"/><g transform="translate(18,20)"><circle r="3" fill="#e84393"/><circle cx="8" r="3" fill="#0984e3"/><circle cx="16" r="3" fill="#e84393"/><circle cx="24" r="3" fill="#0984e3"/><circle cx="32" r="3" fill="none" stroke="#aaa" stroke-width="1" stroke-dasharray="2"/></g></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#2d3436">Pattern-Pinguin</h2>
+    <div class="concept">Pattern — Muster erkennen</div>
+    <div class="bug-line">Der Bug-König hat die Muster sabotiert und Teile herausgerissen! Erkennt ihr trotzdem, was fehlt?</div>
+    <div class="explanation">Schau dir die Fliesen im Bad an oder die Steine auf dem Gehweg — siehst du, wie sich Formen und Farben wiederholen? Das ist ein <strong>Muster</strong>! Der Pattern-Pinguin watschelt: links, rechts, links, rechts. Wenn du das Muster erkannt hast, weißt du was als Nächstes kommt! Programmierer lieben Muster, denn sie sparen Arbeit: Statt 100 Dinge einzeln zu beschreiben, beschreibst du nur das Muster einmal.</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#2d3436">🎮 Aktivität — Muster-Detektive</div>
+      Sammelt bunte Knöpfe, Stifte oder Legosteine. Einer legt ein Muster: rot-blau-rot-blau-? Der andere errät was kommt. Macht es schwieriger: 3er-Muster (rot-blau-gelb), dann 4er. Dann Muster-Jagd durch die Wohnung oder draußen: Fliesen, Zäune, Gardinen — überall Patterns! Wer findet die meisten? 🔮
+      <br><em>💡 Material-Ideen: Legosteine, Gummibärchen-Farben, Murmeln, Knöpfe, Bauklötze</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Einer legt 3 verschiedene Muster mit steigender Schwierigkeit: ein 2er-Muster, ein 3er-Muster, ein 4er-Muster. Jeweils mit einem ? am Ende. Der andere muss alle 3 richtig ergänzen!
+      <span class="fail">Bug-König gewinnt, wenn: Mehr als ein Muster falsch ergänzt wird.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 11: Rekursions-Rabe -->
+<div class="card">
+  <div class="card-top" style="background:#f0f2f2">
+    <span class="card-number">#11</span>
+    <span class="card-badge">⭐⭐⭐ Profi</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f0f2f2"/><g transform="translate(50,48)"><ellipse rx="16" ry="14" fill="#636e72"/><ellipse rx="10" ry="8" cy="3" fill="#555"/><circle cx="-4" cy="-3" r="2.5" fill="#fff"/><circle cx="-4" cy="-3" r="1.2" fill="#222"/><circle cx="5" cy="-3" r="2.5" fill="#fff"/><circle cx="5" cy="-3" r="1.2" fill="#222"/><polygon points="0,1 -3,5 3,5" fill="#2d3436"/></g><rect x="60" y="52" width="20" height="16" rx="2" fill="none" stroke="#aaa" stroke-width="1"/><rect x="63" y="55" width="14" height="10" rx="1.5" fill="none" stroke="#bbb" stroke-width=".8"/><rect x="65.5" y="57.5" width="9" height="5" rx="1" fill="none" stroke="#ccc" stroke-width=".6"/><path d="M32 42 Q22 35 20 42 Q18 50 28 48" fill="#636e72"/><path d="M68 42 Q78 35 80 42 Q82 50 72 48" fill="#636e72"/></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#636e72">Rekursions-Rabe</h2>
+    <div class="concept">Rekursion — Spiegelsaal</div>
+    <div class="bug-line">Der Bug-König hat die Abbruchbedingung gestohlen — die Rekursion hört nie auf! Schnell, findet die Grenze!</div>
+    <div class="explanation">Stell dir einen Spiegelsaal vor: Du siehst dich — und im Spiegel siehst du einen Spiegel, und darin wieder einen, immer kleiner, scheinbar unendlich! Das ist <strong>Rekursion</strong>: Etwas enthält sich selbst. Der Rekursions-Rabe erzählt Geschichten: Es war einmal ein Rabe, der erzählte eine Geschichte über einen Raben, der eine Geschichte erzählte... Das Wichtigste: Es muss irgendwann aufhören — die Abbruchbedingung! Wie die kleinste russische Puppe, in die keine weitere passt. 🪆</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#636e72">🎮 Aktivität — Bild im Bild</div>
+      Zeichnet einen Bilderrahmen auf ein Blatt. Darin ein Bild — eine Blume. Aber an der Wand hängt noch ein Bilderrahmen! Darin wieder eine Blume mit einem Bilderrahmen. Wie viele Ebenen schafft ihr, bevor es zu klein wird? Der Moment wo ihr aufhört (zu klein!), ist eure Abbruchbedingung! Probiert es auch mit Strichmännchen, die Strichmännchen halten... 🖼️
+      <br><em>💡 Motiv-Ideen: Bilderrahmen an der Wand, Roboter der Roboter hält, Schachtel in Schachtel, Baum mit Bäumen als Blätter</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> Schafft mindestens 4 Ebenen im Bild-im-Bild! Und: Erklärt in einem Satz, was eure Abbruchbedingung ist (z.B. "Zu klein zum Zeichnen"). Wer die Abbruchbedingung nicht erklären kann, hat das Konzept noch nicht geknackt!
+      <span class="fail">Bug-König gewinnt, wenn: Weniger als 4 Ebenen oder die Abbruchbedingung nicht erklärt werden kann.</span>
+    </div>
+  </div>
+</div>
+
+<!-- KARTE 12: Event-Eule -->
+<div class="card">
+  <div class="card-top" style="background:#f3f1ff">
+    <span class="card-number">#12</span>
+    <span class="card-badge">⭐⭐⭐ Profi</span>
+    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f3f1ff"/><ellipse cx="50" cy="55" rx="18" ry="20" fill="#a29bfe"/><circle cx="42" cy="48" r="7" fill="#fff" stroke="#a29bfe" stroke-width="1"/><circle cx="58" cy="48" r="7" fill="#fff" stroke="#a29bfe" stroke-width="1"/><circle cx="42" cy="48" r="3" fill="#222"/><circle cx="58" cy="48" r="3" fill="#222"/><circle cx="43" cy="47" r="1" fill="#fff"/><circle cx="59" cy="47" r="1" fill="#fff"/><polygon points="50,53 47,57 53,57" fill="#f39c12"/><path d="M32 43 Q28 35 35 38" stroke="#a29bfe" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M68 43 Q72 35 65 38" stroke="#a29bfe" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M38 68 L36 75" stroke="#f39c12" stroke-width="2"/><path d="M62 68 L64 75" stroke="#f39c12" stroke-width="2"/><circle cx="75" cy="30" r="3" fill="none" stroke="#fdcb6e" stroke-width="1.5"/><line x1="75" y1="24" x2="75" y2="22" stroke="#fdcb6e" stroke-width="1"/><line x1="75" y1="36" x2="75" y2="38" stroke="#fdcb6e" stroke-width="1"/><line x1="69" y1="30" x2="67" y2="30" stroke="#fdcb6e" stroke-width="1"/><line x1="81" y1="30" x2="83" y2="30" stroke="#fdcb6e" stroke-width="1"/></svg>
+  </div>
+  <div class="card-body">
+    <h2 style="color:#a29bfe">Event-Eule</h2>
+    <div class="concept">Event — Warte auf Zeichen</div>
+    <div class="bug-line">Finale! Der Bug-König schickt seine schnellsten Bugs — eure Reaktionszeit wird auf die Probe gestellt!</div>
+    <div class="explanation">Eine Eule sitzt nachts auf ihrem Ast und lauscht. Raschelt etwas? Sofort dreht sie den Kopf. Piepst eine Maus? Sofort fliegt sie los! Die Eule reagiert auf <strong>Events</strong> — Ereignisse um sie herum. Computer funktionieren genauso: Drückst du eine Taste? Event! Klickst du mit der Maus? Event! Für jedes Event hat der Computer eine Anweisung: WENN dieses Event passiert, DANN mach das. ⚡</div>
+    <div class="activity">
+      <div class="activity-label" style="color:#a29bfe">🎮 Aktivität — Reaktions-Computer</div>
+      Einer ist der Computer, der andere löst Events aus. Vereinbart 4 Regeln: (1) Klatschen → springen, (2) Pfeifen → im Kreis drehen, (3) Stampfen → einfrieren, (4) Piep sagen → hinsetzen. Dann feuert der Event-Auslöser die Signale ab — mal schnell, mal langsam, zufällige Reihenfolge! Dann tauscht. Bonus: Zwei Events gleichzeitig — was passiert? ⚡
+      <br><em>💡 Event-Ideen: Klatschen, Pfeifen, Stampfen, Schnipsen, ein Wort rufen, Licht an/aus</em>
+    </div>
+    <div class="challenge">
+      <strong>Challenge:</strong> 10 Events in schneller Folge! Der Computer darf sich maximal 1 Mal vertun. Dann Rollentausch — beide müssen bestehen!
+      <span class="fail">Bug-König gewinnt, wenn: Einer der Spieler mehr als 1 Fehler bei den 10 Events macht.</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ===== ABENTEUERKARTE ===== -->
+<div class="adventure-map">
+  <h2>🗺️ Abenteuerkarte</h2>
+  <div class="map-subtitle">Euer Weg durch das Land der Code Creatures — klebt einen Stern auf jede geschaffte Station!</div>
+  
+  <div class="map-path">
+    <div class="map-station"><span class="station-num">1</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">2</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">3</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">4</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">5</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">6</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">7</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">8</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">9</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">10</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">11</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station"><span class="station-num">12</span></div>
+    <div class="map-arrow">→</div>
+    <div class="map-station-boss">👑🐛</div>
+  </div>
+
+  <div class="map-legend">
+    <strong>So funktioniert's:</strong> Legt 5 Münzen/Knöpfe in die Mitte (Bug-Chips). Für jede geschaffte Karte: Stern auf die Station malen! ⭐<br>
+    Für jede verlorene Challenge: Ein Bug-Chip weg. <strong>Alle 5 weg = Bug-König gewinnt! 💀</strong><br>
+    Alle 12 Stationen geschafft? <strong>Ihr habt das Land der Code Creatures gerettet! 🎉🏆</strong>
+  </div>
+</div>
+
+<!-- ELTERN-GUIDE -->
+<section class="guide-section">
+  <div class="guide-box">
+    <h2>📖 Eltern-Guide</h2>
+
+    <h3>Was ist Code Creatures?</h3>
+    <p>Ein kooperatives Kartenspiel, in dem Kinder (5–10 Jahre) gemeinsam Coding-Konzepte lernen — <strong>ganz ohne Bildschirm</strong>. Alle Spieler kämpfen zusammen gegen den Bug-König!</p>
+
+    <h3>🎮 Spielablauf in 30 Sekunden</h3>
+    <ul>
+      <li>5 Münzen/Knöpfe als Bug-Chips in die Mitte legen</li>
+      <li>Karten der Reihe nach spielen (1→12)</li>
+      <li>Pro Karte: Lesen → Aktivität machen → Challenge versuchen</li>
+      <li>Challenge geschafft = Stern auf die Abenteuerkarte!</li>
+      <li>Challenge verloren = Bug-König nimmt einen Chip</li>
+      <li>5 Chips weg = Game Over. 12 Karten geschafft = Gewonnen!</li>
+    </ul>
+
+    <div class="tip-box">
+      💡 <strong>Tipp:</strong> 2–3 Karten pro Spielabend sind perfekt. Ihr müsst nicht alle 12 auf einmal spielen — merkt euch einfach, wie viele Bug-Chips noch da sind, und macht beim nächsten Mal weiter!
+    </div>
+
+    <h3>🏗️ Schwierigkeitsstufen</h3>
+    <ul>
+      <li>⭐ <strong>Starter</strong> (Karten 1–4): Sequenz, Schleife, Variable, Bedingung</li>
+      <li>⭐⭐ <strong>Entdecker</strong> (Karten 5–8): Funktionen, Debugging, Listen, Wahr/Falsch</li>
+      <li>⭐⭐⭐ <strong>Profi</strong> (Karten 9–12): Algorithmen, Muster, Rekursion, Events</li>
+    </ul>
+
+    <h3>⚖️ Schwierigkeit anpassen</h3>
+    <ul>
+      <li><strong>Leichter:</strong> 7 Bug-Chips statt 5 (mehr Fehler erlaubt)</li>
+      <li><strong>Schwerer:</strong> Nur 3 Bug-Chips!</li>
+      <li><strong>Für Kleine (5–6):</strong> Challenges weglassen, nur Aktivitäten machen</li>
+    </ul>
+
+    <h3>📌 Häufige Fragen</h3>
+    <p><strong>Ab welchem Alter?</strong> Ab 5 mit Eltern-Hilfe (ohne Challenges). Ab 7–8 mit Challenges.</p>
+    <p><strong>Brauche ich Programmierkenntnisse?</strong> Nein!</p>
+    <p><strong>Was brauche ich?</strong> Karten, 5 Münzen/Knöpfe, und je nach Karte: Stifte, Papier, Becher, oder Alltagsgegenstände.</p>
+
+    <div class="tip-box">
+      🖨️ <strong>Druck-Tipp:</strong> Auf dickerem Papier (160g+) drucken oder laminieren — hält länger und fühlt sich wertiger an!
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Code Creatures vs. Der Bug-König © 2026 — Starter Set (12 Karten + Abenteuerkarte + Eltern-Guide)<br>
+  Für 1–4 Spieler ab 5 Jahren. Kein Bildschirm nötig. 🌿</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Creatures — Screen-Free Coding Cards for Kids</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap');
+
+  :root {
+    --c1: #FF6B6B; --c2: #4ECDC4; --c3: #FFE66D; --c4: #95E1D3;
+    --c5: #F38181; --c6: #AA96DA; --c7: #FCBAD3; --c8: #A8D8EA;
+    --dark: #2D3436; --light: #FAFAFA;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: var(--dark);
+  }
+
+  /* ── LANDING SECTION ── */
+  .landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    color: white;
+  }
+
+  .landing h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    margin-bottom: 0.5rem;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+  }
+
+  .landing .emoji-row { font-size: 3rem; margin: 1rem 0; }
+
+  .landing p {
+    font-size: 1.3rem;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+  }
+
+  .landing .tagline {
+    font-size: 1.1rem;
+    background: rgba(255,255,255,0.2);
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(5px);
+  }
+
+  .btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+
+  .btn-primary { background: var(--c3); color: var(--dark); }
+  .btn-print { background: var(--c2); color: white; }
+  .btn-back { background: rgba(255,255,255,0.2); color: white; font-size: 1rem; padding: 0.7rem 1.5rem; }
+  .btn-guide { background: white; color: var(--dark); font-size: 1.1rem; padding: 0.8rem 2rem; margin-top: 0.8rem; }
+
+  /* ── PARENT GUIDE ── */
+  .guide-section {
+    display: none;
+    padding: 2rem;
+    background: var(--light);
+    min-height: 100vh;
+  }
+  .guide-section.active { display: block; }
+
+  .guide-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .guide-container h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2rem;
+    color: var(--dark);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .guide-block {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+
+  .guide-block h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    color: var(--dark);
+  }
+
+  .guide-block p, .guide-block li {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #444;
+  }
+
+  .guide-block ol, .guide-block ul {
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .guide-block li { margin-bottom: 0.4rem; }
+
+  .guide-example {
+    background: #FFF9E6;
+    border-left: 4px solid var(--c3);
+    border-radius: 12px;
+  }
+
+  .guide-steps {
+    background: #E8F8F5;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-top: 0.8rem;
+  }
+
+  .guide-steps li { margin-bottom: 0.3rem; }
+
+  @media print {
+    .guide-section { display: none !important; }
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 700px;
+    margin: 2rem auto;
+  }
+
+  .feature {
+    background: rgba(255,255,255,0.15);
+    padding: 1.5rem;
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+  }
+
+  .feature .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .feature h3 { font-family: 'Fredoka One', cursive; margin-bottom: 0.3rem; }
+
+  /* ── PRINT SECTION ── */
+  .print-section {
+    display: none;
+    padding: 2rem;
+    background: var(--light);
+    min-height: 100vh;
+  }
+
+  .print-section.active { display: block; }
+  .landing.hidden { display: none; }
+
+  .print-controls {
+    text-align: center;
+    padding: 1.5rem;
+    position: sticky;
+    top: 0;
+    background: var(--light);
+    z-index: 10;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── CARDS ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .card-header {
+    padding: 1.2rem 1.5rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .card-header .creature { font-size: 2.5rem; }
+
+  .card-header h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+
+  .card-header .category {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .card-body { padding: 1.5rem; }
+
+  .card-body .concept {
+    font-weight: 900;
+    color: var(--dark);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-body .description {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    color: #555;
+  }
+
+  .card-body .activity {
+    background: #F8F9FA;
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .activity h4 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .activity ol, .activity ul {
+    padding-left: 1.3rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .card-footer {
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    border-top: 1px solid #eee;
+  }
+
+  .age-badge {
+    background: #eee;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+
+  .difficulty { display: flex; gap: 3px; }
+  .difficulty .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #ddd;
+  }
+  .difficulty .dot.filled { background: var(--c1); }
+
+  .materials {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .materials span {
+    background: #E8F5E9;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #2E7D32;
+  }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    body { background: white; }
+    .print-controls { display: none; }
+    .landing { display: none !important; }
+    .print-section { display: block !important; padding: 0; }
+    .cards-grid { gap: 1rem; padding: 0.5rem; }
+    .card { box-shadow: 1px 1px 3px rgba(0,0,0,0.1); border: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANDING PAGE -->
+<section class="landing" id="landing">
+  <div class="emoji-row">🐙 🦊 🐢 🦉 🐝</div>
+  <h1>Code Creatures</h1>
+  <p>20 screen-free activity cards that teach kids real programming concepts through play, movement & creativity.</p>
+  <div class="tagline">🧠 Ages 5–8 · No screens needed · Print & Play</div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="icon">🎯</div>
+      <h3>Real Concepts</h3>
+      <p>Loops, variables, conditionals, functions — the real deal, made playful.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🏃</div>
+      <h3>Active Play</h3>
+      <p>Movement games, treasure hunts, building challenges. Bodies & brains.</p>
+    </div>
+    <div class="feature">
+      <div class="icon">✂️</div>
+      <h3>Print & Go</h3>
+      <p>Just print the cards. Uses household items only.</p>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="showCards()">🎴 View & Print Cards</button>
+  <br>
+  <button class="btn btn-guide" onclick="showGuide()">📖 Eltern-Anleitung (Deutsch)</button>
+</section>
+
+<!-- PARENT GUIDE (GERMAN) -->
+<section class="guide-section" id="guideSection">
+  <div class="print-controls">
+    <button class="btn btn-back" onclick="showLanding()">← Zurück</button>
+    <button class="btn btn-primary" onclick="hideGuideShowCards()">🎴 Zu den Karten</button>
+  </div>
+  <div class="guide-container">
+    <h1>📖 Eltern-Anleitung</h1>
+
+    <div class="guide-block">
+      <h2>🧩 Was ist Code Creatures?</h2>
+      <p>Code Creatures sind 20 Aktivitätskarten, mit denen Kinder (5–8 Jahre) spielerisch echte Programmier-Konzepte lernen — ganz ohne Bildschirm. Jede Karte ist ein kleines Spiel oder Bastelprojekt, das ihr gemeinsam zu Hause macht.</p>
+    </div>
+
+    <div class="guide-block">
+      <h2>🚀 Wie funktioniert es?</h2>
+      <ol>
+        <li><strong>Karte aussuchen</strong> — Schaut euch die Karten an und wählt eine aus, die euer Kind anspricht (Tier, Thema, oder einfach die erste!).</li>
+        <li><strong>Material sammeln</strong> — Jede Karte zeigt unten die benötigten Materialien. Das sind immer Alltagsgegenstände: Papier, Stifte, Becher, Bauklötze, Bücher.</li>
+        <li><strong>Gemeinsam spielen</strong> — Lest die Aktivität zusammen durch und macht sie Schritt für Schritt. Ihr spielt MIT eurem Kind — es ist kein Arbeitsblatt, sondern ein gemeinsames Spiel.</li>
+        <li><strong>Drucken (optional)</strong> — Ihr könnt die Karten ausdrucken, müsst aber nicht. Am Handy oder Tablet vorlesen geht genauso.</li>
+      </ol>
+    </div>
+
+    <div class="guide-block">
+      <h2>🧠 Was lernt mein Kind dabei?</h2>
+      <p>Die gleichen Konzepte, die echte Programmierer nutzen: logisches Denken, Schritt-für-Schritt-Planung, Fehler finden und beheben, Muster erkennen und kreatives Problemlösen. Das Beste: Euer Kind merkt gar nicht, dass es „lernt" — es spielt einfach.</p>
+    </div>
+
+    <div class="guide-block">
+      <h2>⏱️ Wie lange dauert eine Karte?</h2>
+      <p>Die meisten Karten dauern <strong>10–25 Minuten</strong>. Die genaue Zeit steht auf jeder Karte. Perfekt für einen Nachmittag, einen Regentag oder als Familien-Aktivität am Wochenende.</p>
+    </div>
+
+    <div class="guide-block">
+      <h2>💻 Brauche ich Vorkenntnisse?</h2>
+      <p><strong>Nein!</strong> Ihr müsst nichts über Programmieren wissen. Jede Karte erklärt das Konzept in einem einfachen Satz, und die Aktivität ist so gestaltet, dass ihr sie einfach zusammen durchspielen könnt. Wenn euer Kind fragt „Warum machen wir das?" — die Antwort steht auf der Karte.</p>
+    </div>
+
+    <div class="guide-block">
+      <h2>🔢 Muss ich eine bestimmte Reihenfolge einhalten?</h2>
+      <p><strong>Nein, die Reihenfolge ist egal.</strong> Jede Karte funktioniert für sich allein. Tipp: Startet mit einer Karte mit Schwierigkeitsgrad ● (1 Punkt) — die sind am einfachsten. Die Karten mit ●●● sind eher für ältere oder erfahrene Kinder.</p>
+    </div>
+
+    <div class="guide-block guide-example">
+      <h2>🎬 So sieht eine Session aus — Beispiel mit „Octo the Organizer"</h2>
+      <p><em>Karte #1: Robot Sandwich · 15 Minuten · Ab 5 Jahre · Schwierigkeit: leicht</em></p>
+      <div class="guide-steps">
+        <ol>
+          <li><strong>Vorbereitung (2 Min.):</strong> Legt Brot, Butter, Käse und ein Messer auf den Tisch. Gebt eurem Kind Papier und einen Stift.</li>
+          <li><strong>Erklärung (1 Min.):</strong> „Ich bin jetzt ein Roboter. Ich kann nur genau das tun, was du mir aufschreibst. Schreib mir Schritt für Schritt auf, wie ich ein Brot schmieren soll!"</li>
+          <li><strong>Kind schreibt Anleitung (5 Min.):</strong> Euer Kind schreibt (oder diktiert) die Schritte: „Nimm Brot. Tu Butter drauf." usw.</li>
+          <li><strong>Roboter führt aus (5 Min.):</strong> Ihr folgt den Anweisungen <em>wörtlich</em>. Steht da nur „Tu Butter drauf" — nehmt die ganze Packung und legt sie aufs Brot. 😄 Das Kind lacht und merkt: der Computer braucht <em>genaue</em> Anweisungen!</li>
+          <li><strong>Verbessern (2 Min.):</strong> Das Kind darf die Anleitung korrigieren und ihr probiert es nochmal. Jetzt klappt es besser!</li>
+        </ol>
+      </div>
+      <p style="margin-top:1rem;"><strong>Was euer Kind gerade gelernt hat:</strong> Programme sind exakte Schritt-für-Schritt-Anweisungen — und wenn ein Schritt fehlt oder unklar ist, geht es schief. Das ist die Grundlage von allem in der Informatik.</p>
+    </div>
+
+    <div style="text-align:center; margin-top:2rem;">
+      <button class="btn btn-primary" onclick="hideGuideShowCards()">🎴 Los geht's — Karten anschauen!</button>
+    </div>
+  </div>
+</section>
+
+<!-- CARDS SECTION -->
+<section class="print-section" id="printSection">
+  <div class="print-controls">
+    <button class="btn btn-back" onclick="showLanding()">← Back</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ Print All Cards</button>
+  </div>
+  <div class="cards-grid" id="cardsGrid"></div>
+</section>
+
+<script>
+const CARDS = [
+  {
+    creature: "🐙", name: "Octo the Organizer", color: "#FF6B6B",
+    category: "Sequences", concept: "Sequential Instructions",
+    description: "Computers follow steps in exact order. One wrong step and everything goes wonky!",
+    activity: {
+      title: "🎯 Robot Sandwich",
+      steps: [
+        "One person is the 'Robot' (follows instructions EXACTLY)",
+        "Others write step-by-step instructions to make a sandwich",
+        "Robot does ONLY what's written — literally!",
+        "'Put bread on plate' works. 'Make sandwich' doesn't!",
+        "Laugh when the Robot puts cheese on the outside 😄"
+      ]
+    },
+    materials: ["Bread", "Fillings", "Paper", "Pencil"],
+    age: "5+", difficulty: 1, time: "15 min"
+  },
+  {
+    creature: "🦊", name: "Foxy the Finder", color: "#E17055",
+    category: "Conditionals", concept: "If/Then Decisions",
+    description: "Programs make decisions: IF something is true, THEN do this. ELSE do that!",
+    activity: {
+      title: "🚦 Traffic Light Game",
+      steps: [
+        "Stand in a room with space to move",
+        "Leader calls out IF/THEN rules:",
+        "IF I clap → jump! IF I stomp → freeze!",
+        "IF I whistle → spin! ELSE → sit down!",
+        "Add more rules to make it tricky. Last one standing wins!"
+      ]
+    },
+    materials: ["Space to move"],
+    age: "5+", difficulty: 1, time: "10 min"
+  },
+  {
+    creature: "🐢", name: "Shelly the Looper", color: "#4ECDC4",
+    category: "Loops", concept: "Repeat / Loops",
+    description: "Instead of writing the same thing 100 times, we tell the computer: REPEAT this!",
+    activity: {
+      title: "🔁 Loop Dance",
+      steps: [
+        "Create a dance move (e.g., 2 claps + 1 spin)",
+        "Write it on paper: REPEAT 4 TIMES: [clap, clap, spin]",
+        "Perform the loop! Count together",
+        "Now make a nested loop: REPEAT 3 TIMES: [REPEAT 2: stomp, then wave]",
+        "Challenge: who can make the longest loop without messing up?"
+      ]
+    },
+    materials: ["Paper", "Pencil", "Music (optional)"],
+    age: "5+", difficulty: 1, time: "15 min"
+  },
+  {
+    creature: "🦉", name: "Hoot the Helper", color: "#6C5CE7",
+    category: "Functions", concept: "Functions / Reusable Actions",
+    description: "A function is a named set of steps you can reuse. Like a recipe you call by name!",
+    activity: {
+      title: "📦 Name That Move",
+      steps: [
+        "Invent a set of 3 moves (e.g., jump + wave + turn)",
+        "Give it a name: 'SUPER STAR'",
+        "Write it on a card. Now that's your FUNCTION",
+        "When someone calls 'SUPER STAR!' → do all 3 moves",
+        "Make 4 function cards. Build a dance by calling function names!"
+      ]
+    },
+    materials: ["Index cards", "Markers"],
+    age: "6+", difficulty: 2, time: "20 min"
+  },
+  {
+    creature: "🐝", name: "Buzzy the Builder", color: "#FDCB6E",
+    category: "Variables", concept: "Variables / Storage",
+    description: "A variable is like a labeled box. You put something in, and can change it later!",
+    activity: {
+      title: "📦 Magic Boxes",
+      steps: [
+        "Get 3 cups/boxes. Label them: 'SCORE', 'NAME', 'COLOR'",
+        "Put a number (written on paper) in SCORE → that's the value!",
+        "Play a game: rock-paper-scissors. Winner updates SCORE +1",
+        "After each round, check what's in the box",
+        "Discuss: the LABEL stays the same, but the VALUE changes!"
+      ]
+    },
+    materials: ["3 cups/boxes", "Paper slips", "Pencil"],
+    age: "6+", difficulty: 2, time: "15 min"
+  },
+  {
+    creature: "🐸", name: "Leap the Debugger", color: "#00B894",
+    category: "Debugging", concept: "Finding & Fixing Errors",
+    description: "A bug is a mistake in the code. Debugging means finding it and fixing it!",
+    activity: {
+      title: "🔍 Spot the Bug",
+      steps: [
+        "Write instructions to draw a simple picture (house, tree, star)",
+        "Secretly add 1-2 wrong steps (e.g., 'draw circle' instead of 'draw square')",
+        "Give to a partner — they follow instructions exactly",
+        "Compare result to what it SHOULD look like",
+        "Find the bugs! Fix them! Re-run the 'program' ✅"
+      ]
+    },
+    materials: ["Paper", "Pencils", "Colored pens"],
+    age: "5+", difficulty: 1, time: "20 min"
+  },
+  {
+    creature: "🦁", name: "Leo the Logician", color: "#E84393",
+    category: "Logic", concept: "AND / OR / NOT",
+    description: "Computers combine conditions: do this IF sunny AND warm. IF NOT raining OR cold.",
+    activity: {
+      title: "🎪 Logic Simon Says",
+      steps: [
+        "Play Simon Says but with logic operators!",
+        "IF wearing blue AND have long hair → jump!",
+        "IF wearing red OR wearing green → clap!",
+        "IF NOT wearing socks → spin around!",
+        "Kids figure out if THEY match the condition. Gets tricky fast!"
+      ]
+    },
+    materials: ["Space to move"],
+    age: "6+", difficulty: 2, time: "15 min"
+  },
+  {
+    creature: "🐼", name: "Patch the Planner", color: "#636E72",
+    category: "Algorithms", concept: "Step-by-Step Problem Solving",
+    description: "An algorithm is a clear plan to solve a problem. Like directions, but for anything!",
+    activity: {
+      title: "🗺️ Treasure Hunt Code",
+      steps: [
+        "Hide a small toy/treat somewhere in the room",
+        "Write an algorithm (directions) to find it:",
+        "'Walk 5 steps forward. Turn left. Walk 3 steps. Look under pillow.'",
+        "Give your algorithm to someone else to follow",
+        "Did they find it? If not — refine your algorithm!"
+      ]
+    },
+    materials: ["Small treasure", "Paper", "Pencil"],
+    age: "5+", difficulty: 1, time: "20 min"
+  },
+  {
+    creature: "🦋", name: "Flutter the Sorter", color: "#A29BFE",
+    category: "Sorting", concept: "Sorting Algorithms",
+    description: "Computers need to sort data. There are many ways — some faster than others!",
+    activity: {
+      title: "🃏 Human Sort",
+      steps: [
+        "Give each person a card with a number (1-10)",
+        "Everyone holds their card up, facing others",
+        "BUBBLE SORT: Compare neighbors, swap if out of order. Repeat!",
+        "Time it! How many swaps did it take?",
+        "Try with more people. Does it take longer? That's complexity!"
+      ]
+    },
+    materials: ["Number cards (1-10)"],
+    age: "7+", difficulty: 3, time: "15 min"
+  },
+  {
+    creature: "🐨", name: "Kobi the Counter", color: "#0984E3",
+    category: "Loops", concept: "Counting Loops (For Loops)",
+    description: "A counting loop repeats something a specific number of times. FOR 1 to 5: do this!",
+    activity: {
+      title: "🏗️ Block Tower Challenge",
+      steps: [
+        "Write a building program: FOR i = 1 TO 5: stack one block",
+        "Execute it! Count out loud: 'Loop 1... Loop 2...'",
+        "Now write: FOR i = 1 TO 3: [stack 2 blocks, then add a roof piece]",
+        "What happens if you change 3 to 10?",
+        "Predict the tower height BEFORE building. Were you right?"
+      ]
+    },
+    materials: ["Building blocks / LEGO", "Paper", "Pencil"],
+    age: "6+", difficulty: 2, time: "20 min"
+  },
+  {
+    creature: "🐙", name: "Pixel the Artist", color: "#FD79A8",
+    category: "Data", concept: "Pixel Art / Binary",
+    description: "Screens are made of tiny squares (pixels). Each pixel is ON or OFF — that's binary!",
+    activity: {
+      title: "🎨 Grid Art Coding",
+      steps: [
+        "Draw an 8×8 grid on graph paper",
+        "Color = 1 (filled), White = 0 (empty)",
+        "Write your picture as rows of 0s and 1s",
+        "Give ONLY the numbers to a friend",
+        "They decode it on their own grid. Does it match? 🎉"
+      ]
+    },
+    materials: ["Graph paper", "Pencils", "Colored pens"],
+    age: "6+", difficulty: 2, time: "25 min"
+  },
+  {
+    creature: "🦝", name: "Rascal the Randomizer", color: "#B2BEC3",
+    category: "Randomness", concept: "Random Numbers / Chance",
+    description: "Computers can generate random numbers. Games use randomness to be unpredictable!",
+    activity: {
+      title: "🎲 Random Story Builder",
+      steps: [
+        "Make 3 lists: CHARACTERS (6), PLACES (6), ACTIONS (6)",
+        "Roll a die for each list → that's your random pick",
+        "Tell a story using your random combo!",
+        "Roll again → totally different story from the same lists",
+        "Discuss: same 'code' (lists), different 'output' (stories)!"
+      ]
+    },
+    materials: ["1 die", "Paper", "Pencil"],
+    age: "5+", difficulty: 1, time: "20 min"
+  },
+  {
+    creature: "🐺", name: "Scout the Searcher", color: "#2D3436",
+    category: "Searching", concept: "Binary Search",
+    description: "To find something fast, don't check every item — cut the options in HALF each time!",
+    activity: {
+      title: "🔢 Number Guessing Game",
+      steps: [
+        "One person picks a secret number 1-100",
+        "Guesser says a number. Answer: 'higher' or 'lower'",
+        "BAD strategy: guess 1, 2, 3, 4... (100 guesses worst case!)",
+        "GOOD strategy: guess 50, then 25 or 75, then half again...",
+        "Count guesses. Binary search = max 7 guesses for 1-100! 🤯"
+      ]
+    },
+    materials: ["None!"],
+    age: "7+", difficulty: 2, time: "10 min"
+  },
+  {
+    creature: "🐰", name: "Hoppy the Eventer", color: "#FAB1A0",
+    category: "Events", concept: "Event-Driven Programming",
+    description: "Some code waits for something to happen (an EVENT) before it runs. Click → action!",
+    activity: {
+      title: "🎵 Sound Triggers",
+      steps: [
+        "Assign actions to sounds (events):",
+        "DOORBELL (ding dong) → everyone waves",
+        "PHONE RING (ring ring) → everyone sits",
+        "DOG BARK (woof) → everyone jumps",
+        "Leader makes random sounds. Everyone reacts to the correct EVENT!",
+        "Add sounds. Fastest correct reactor gets a point!"
+      ]
+    },
+    materials: ["Space to move"],
+    age: "5+", difficulty: 1, time: "10 min"
+  },
+  {
+    creature: "🦄", name: "Uni the Creator", color: "#E056A0",
+    category: "Abstraction", concept: "Abstraction / Simplifying",
+    description: "Abstraction means hiding complicated details and keeping only what matters.",
+    activity: {
+      title: "🗺️ Map Making",
+      steps: [
+        "Look at your room/house — so many details!",
+        "Draw a MAP of it. But only the important parts!",
+        "Choose what to KEEP (walls, doors, furniture) and what to HIDE (colors, textures)",
+        "Can someone navigate using your map?",
+        "That's abstraction: showing only what's needed! Like a subway map vs. real streets."
+      ]
+    },
+    materials: ["Paper", "Pencils"],
+    age: "7+", difficulty: 3, time: "25 min"
+  },
+  {
+    creature: "🐊", name: "Snapper the Tester", color: "#00CEC9",
+    category: "Testing", concept: "Testing / Edge Cases",
+    description: "Good programmers test their code with tricky inputs. What if the number is 0? Or negative?",
+    activity: {
+      title: "🧪 Break My Rules!",
+      steps: [
+        "One person writes rules for a game (e.g., 'pick the biggest number')",
+        "Others try to BREAK it with tricky inputs!",
+        "'What if two numbers are the same?'",
+        "'What if a number is negative?'",
+        "'What if there are NO numbers?'",
+        "Rule-maker must update rules to handle every edge case!"
+      ]
+    },
+    materials: ["Paper", "Pencil"],
+    age: "7+", difficulty: 3, time: "15 min"
+  },
+  {
+    creature: "🐻", name: "Teddy the Stacker", color: "#D63031",
+    category: "Data Structures", concept: "Stacks (LIFO)",
+    description: "A stack is like a pile of plates: last one on top is the first one off. LIFO!",
+    activity: {
+      title: "📚 Book Stack Challenge",
+      steps: [
+        "Stack 5 books on top of each other",
+        "Rule: you can ONLY take the TOP book (that's a stack!)",
+        "Someone calls a book title — how do you get to it?",
+        "You must remove books from top until you find it",
+        "Put them back one by one. That's PUSH and POP! 📚"
+      ]
+    },
+    materials: ["5+ books"],
+    age: "6+", difficulty: 2, time: "10 min"
+  },
+  {
+    creature: "🐧", name: "Waddle the Walker", color: "#74B9FF",
+    category: "Sequences", concept: "Directional Commands (Turtle Graphics)",
+    description: "Imagine a penguin that follows your commands: FORWARD, LEFT, RIGHT. Draw by walking!",
+    activity: {
+      title: "🐧 Penguin Walk Drawing",
+      steps: [
+        "One person is the 'Penguin'. Eyes closed (or blindfolded)!",
+        "Guide them with ONLY these commands: FORWARD [steps], LEFT, RIGHT",
+        "Goal: walk the Penguin to make a shape (square, triangle)",
+        "Tape on the floor marks the path the Penguin walked",
+        "Write down the commands. That's a program! Replay it to verify."
+      ]
+    },
+    materials: ["Blindfold (optional)", "Tape", "Space to walk"],
+    age: "5+", difficulty: 1, time: "20 min"
+  },
+  {
+    creature: "🦎", name: "Camo the Encoder", color: "#55E6C1",
+    category: "Data", concept: "Encoding / Decoding",
+    description: "Computers store everything as numbers. Letters become numbers, colors become numbers!",
+    activity: {
+      title: "🔐 Secret Code Messages",
+      steps: [
+        "Make a code table: A=1, B=2, C=3 ... Z=26",
+        "Write a secret message using ONLY numbers",
+        "Example: 8-5-12-12-15 = ? (HELLO!)",
+        "Pass your coded message to a friend to DECODE",
+        "Bonus: invent your OWN encoding (A=🌟, B=🔥, C=💧...)"
+      ]
+    },
+    materials: ["Paper", "Pencil"],
+    age: "6+", difficulty: 2, time: "20 min"
+  },
+  {
+    creature: "🐉", name: "Ember the Optimizer", color: "#E55039",
+    category: "Optimization", concept: "Efficiency / Optimization",
+    description: "There are many ways to solve a problem. The BEST way uses the least steps or time!",
+    activity: {
+      title: "⚡ Speed Sort Race",
+      steps: [
+        "Scatter 20 numbered cards face-down on the floor",
+        "Mission: arrange them 1-20 in order. Timer on!",
+        "Round 1: Just do it however you want. Note the time.",
+        "Round 2: Plan a STRATEGY first. Discuss as a team.",
+        "Round 3: Execute the strategy. Beat your time!",
+        "Talk about: what strategy was fastest? That's optimization!"
+      ]
+    },
+    materials: ["20 numbered cards", "Timer"],
+    age: "7+", difficulty: 3, time: "20 min"
+  }
+];
+
+function showGuide() {
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('guideSection').classList.add('active');
+}
+
+function hideGuideShowCards() {
+  document.getElementById('guideSection').classList.remove('active');
+  showCards();
+}
+
+function showCards() {
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('guideSection').classList.remove('active');
+  document.getElementById('printSection').classList.add('active');
+  renderCards();
+}
+
+function showLanding() {
+  document.getElementById('landing').classList.remove('hidden');
+  document.getElementById('printSection').classList.remove('active');
+  document.getElementById('guideSection').classList.remove('active');
+}
+
+function renderCards() {
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = CARDS.map((c, i) => `
+    <div class="card">
+      <div class="card-header" style="background:${c.color}">
+        <span class="creature">${c.creature}</span>
+        <div>
+          <div class="category">${c.category}</div>
+          <h2>${c.name}</h2>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="concept">💡 ${c.concept}</div>
+        <p class="description">${c.description}</p>
+        <div class="activity">
+          <h4>${c.activity.title}</h4>
+          <ol>${c.activity.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+        </div>
+        <div class="materials">${c.materials.map(m => `<span>✂️ ${m}</span>`).join('')}</div>
+      </div>
+      <div class="card-footer">
+        <span class="age-badge">👶 ${c.age}</span>
+        <span>⏱️ ${c.time}</span>
+        <div class="difficulty">${[1,2,3].map(d => `<span class="dot${d <= c.difficulty ? ' filled' : ''}"></span>`).join('')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>

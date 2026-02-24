@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Creatures — Feedback</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary: #6c5ce7; --primary-light: #f3f1ff;
+  --green: #00b894; --red: #d63031; --orange: #ff6b35;
+  --bg: #f8f7f4; --card: #fff; --text: #2d2a26; --muted: #888;
+  --shadow: 0 2px 12px rgba(0,0,0,.08);
+}
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+.container { max-width: 600px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+.header {
+  text-align: center; padding: 2rem 1rem; margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe); border-radius: 16px; color: #fff;
+}
+.header h1 { font-size: 1.6rem; font-weight: 800; }
+.header p { opacity: .85; font-size: .95rem; margin-top: .3rem; }
+.header .time { font-size: .8rem; opacity: .65; margin-top: .5rem; }
+
+.section {
+  background: var(--card); border-radius: 14px; padding: 1.3rem; margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+.section-title {
+  font-size: .75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--primary); margin-bottom: 1rem;
+}
+
+.question { margin-bottom: 1.4rem; }
+.question:last-child { margin-bottom: 0; }
+.question label {
+  display: block; font-size: .95rem; font-weight: 700; margin-bottom: .6rem; line-height: 1.4;
+}
+.question .hint { font-size: .8rem; color: var(--muted); font-weight: 400; margin-top: .15rem; }
+
+/* Rating 1-10 */
+.rating-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.rating-row input[type="radio"] { display: none; }
+.rating-row label.rating-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 8px; font-size: .85rem; font-weight: 700;
+  background: #f0f0f0; color: #666; cursor: pointer; transition: all .15s;
+  border: 2px solid transparent;
+}
+.rating-row input[type="radio"]:checked + label.rating-btn {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+  transform: scale(1.1);
+}
+.rating-labels { display: flex; justify-content: space-between; font-size: .7rem; color: var(--muted); margin-top: .3rem; }
+
+/* Yes/No */
+.yesno-row { display: flex; gap: .5rem; }
+.yesno-row input[type="radio"] { display: none; }
+.yesno-row label.yn-btn {
+  flex: 1; text-align: center; padding: .6rem; border-radius: 10px;
+  font-size: .9rem; font-weight: 700; cursor: pointer;
+  background: #f0f0f0; color: #666; transition: all .15s; border: 2px solid transparent;
+}
+.yesno-row input[value="ja"]:checked + label.yn-btn { background: #e8f8f5; color: var(--green); border-color: var(--green); }
+.yesno-row input[value="nein"]:checked + label.yn-btn { background: #fde8e8; color: var(--red); border-color: var(--red); }
+.yesno-row input[value="teilweise"]:checked + label.yn-btn { background: #fff8e1; color: var(--orange); border-color: var(--orange); }
+
+/* Emoji rating */
+.emoji-row { display: flex; gap: .4rem; justify-content: center; }
+.emoji-row input[type="radio"] { display: none; }
+.emoji-row label.emoji-btn {
+  font-size: 1.8rem; cursor: pointer; padding: .3rem .5rem; border-radius: 10px;
+  border: 2px solid transparent; transition: all .15s; opacity: .5;
+}
+.emoji-row input[type="radio"]:checked + label.emoji-btn {
+  opacity: 1; border-color: var(--primary); background: var(--primary-light);
+  transform: scale(1.15);
+}
+
+/* Number input */
+.num-input {
+  width: 80px; padding: .5rem .8rem; font-size: 1.1rem; font-weight: 700;
+  border: 2px solid #e0e0e0; border-radius: 10px; text-align: center;
+  font-family: inherit;
+}
+.num-input:focus { border-color: var(--primary); outline: none; }
+
+/* Text input */
+.text-input {
+  width: 100%; padding: .6rem .8rem; font-size: .9rem;
+  border: 2px solid #e0e0e0; border-radius: 10px; font-family: inherit;
+  resize: vertical; min-height: 60px;
+}
+.text-input:focus { border-color: var(--primary); outline: none; }
+
+/* Select cards */
+.card-select { display: flex; flex-wrap: wrap; gap: .4rem; }
+.card-select input[type="checkbox"] { display: none; }
+.card-select label {
+  padding: .35rem .6rem; border-radius: 8px; font-size: .75rem; font-weight: 600;
+  background: #f0f0f0; color: #666; cursor: pointer; transition: all .12s;
+  border: 2px solid transparent;
+}
+.card-select input:checked + label { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+/* Submit */
+.submit-btn {
+  display: block; width: 100%; padding: 1rem; font-size: 1.1rem; font-weight: 800;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: #fff;
+  border: none; border-radius: 14px; cursor: pointer; font-family: inherit;
+  box-shadow: 0 4px 15px rgba(108,92,231,.3); transition: transform .1s;
+}
+.submit-btn:hover { transform: translateY(-2px); }
+.submit-btn:active { transform: translateY(0); }
+
+/* Thank you */
+.thank-you {
+  display: none; text-align: center; padding: 3rem 1.5rem;
+  background: var(--card); border-radius: 16px; box-shadow: var(--shadow);
+}
+.thank-you.visible { display: block; }
+.thank-you h2 { font-size: 1.8rem; color: var(--primary); }
+.thank-you p { color: var(--muted); margin-top: .5rem; }
+.thank-you .big-emoji { font-size: 4rem; margin-bottom: 1rem; }
+
+.form-content.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🦁 Code Creatures Feedback</h1>
+    <p>Hilf uns, das Spiel besser zu machen!</p>
+    <div class="time">⏱ Dauert ca. 2 Minuten</div>
+  </div>
+
+  <div class="form-content" id="formContent">
+
+  <!-- BASICS -->
+  <div class="section">
+    <div class="section-title">👤 Über euch</div>
+
+    <div class="question">
+      <label>Alter des Kindes / der Kinder
+        <div class="hint">Falls mehrere: z.B. "5, 8"</div>
+      </label>
+      <input type="text" class="num-input" name="alter" placeholder="z.B. 7" style="width:120px">
+    </div>
+
+    <div class="question">
+      <label>Wie viele Personen haben gespielt?</label>
+      <input type="number" class="num-input" name="spieler" min="1" max="10" placeholder="2">
+    </div>
+
+    <div class="question">
+      <label>Wie viele Karten habt ihr gespielt?</label>
+      <input type="number" class="num-input" name="karten_gespielt" min="1" max="12" placeholder="12">
+    </div>
+  </div>
+
+  <!-- GESAMTEINDRUCK -->
+  <div class="section">
+    <div class="section-title">🎯 Gesamteindruck</div>
+
+    <div class="question">
+      <label>Wie viel Spaß hat das Spiel gemacht?</label>
+      <div class="emoji-row">
+        <input type="radio" name="spass" id="spass1" value="1"><label class="emoji-btn" for="spass1">😴</label>
+        <input type="radio" name="spass" id="spass2" value="2"><label class="emoji-btn" for="spass2">😐</label>
+        <input type="radio" name="spass" id="spass3" value="3"><label class="emoji-btn" for="spass3">🙂</label>
+        <input type="radio" name="spass" id="spass4" value="4"><label class="emoji-btn" for="spass4">😄</label>
+        <input type="radio" name="spass" id="spass5" value="5"><label class="emoji-btn" for="spass5">🤩</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Würdet ihr nochmal spielen?</label>
+      <div class="yesno-row">
+        <input type="radio" name="nochmal" id="nochmal_ja" value="ja"><label class="yn-btn" for="nochmal_ja">✅ Ja!</label>
+        <input type="radio" name="nochmal" id="nochmal_vl" value="teilweise"><label class="yn-btn" for="nochmal_vl">🤔 Vielleicht</label>
+        <input type="radio" name="nochmal" id="nochmal_nein" value="nein"><label class="yn-btn" for="nochmal_nein">❌ Nein</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Würdet ihr es anderen Familien empfehlen?</label>
+      <div class="yesno-row">
+        <input type="radio" name="empfehlen" id="empf_ja" value="ja"><label class="yn-btn" for="empf_ja">✅ Ja!</label>
+        <input type="radio" name="empfehlen" id="empf_vl" value="teilweise"><label class="yn-btn" for="empf_vl">🤔 Vielleicht</label>
+        <input type="radio" name="empfehlen" id="empf_nein" value="nein"><label class="yn-btn" for="empf_nein">❌ Nein</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSTÄNDLICHKEIT -->
+  <div class="section">
+    <div class="section-title">📖 Verständlichkeit</div>
+
+    <div class="question">
+      <label>Waren die Erklärungstexte verständlich?</label>
+      <div class="rating-row">
+        <input type="radio" name="texte_klar" id="tk1" value="1"><label class="rating-btn" for="tk1">1</label>
+        <input type="radio" name="texte_klar" id="tk2" value="2"><label class="rating-btn" for="tk2">2</label>
+        <input type="radio" name="texte_klar" id="tk3" value="3"><label class="rating-btn" for="tk3">3</label>
+        <input type="radio" name="texte_klar" id="tk4" value="4"><label class="rating-btn" for="tk4">4</label>
+        <input type="radio" name="texte_klar" id="tk5" value="5"><label class="rating-btn" for="tk5">5</label>
+        <input type="radio" name="texte_klar" id="tk6" value="6"><label class="rating-btn" for="tk6">6</label>
+        <input type="radio" name="texte_klar" id="tk7" value="7"><label class="rating-btn" for="tk7">7</label>
+        <input type="radio" name="texte_klar" id="tk8" value="8"><label class="rating-btn" for="tk8">8</label>
+        <input type="radio" name="texte_klar" id="tk9" value="9"><label class="rating-btn" for="tk9">9</label>
+        <input type="radio" name="texte_klar" id="tk10" value="10"><label class="rating-btn" for="tk10">10</label>
+      </div>
+      <div class="rating-labels"><span>Unverständlich</span><span>Glasklar</span></div>
+    </div>
+
+    <div class="question">
+      <label>Konnte das Kind die Konzepte verstehen?</label>
+      <div class="rating-row">
+        <input type="radio" name="kind_versteht" id="kv1" value="1"><label class="rating-btn" for="kv1">1</label>
+        <input type="radio" name="kind_versteht" id="kv2" value="2"><label class="rating-btn" for="kv2">2</label>
+        <input type="radio" name="kind_versteht" id="kv3" value="3"><label class="rating-btn" for="kv3">3</label>
+        <input type="radio" name="kind_versteht" id="kv4" value="4"><label class="rating-btn" for="kv4">4</label>
+        <input type="radio" name="kind_versteht" id="kv5" value="5"><label class="rating-btn" for="kv5">5</label>
+        <input type="radio" name="kind_versteht" id="kv6" value="6"><label class="rating-btn" for="kv6">6</label>
+        <input type="radio" name="kind_versteht" id="kv7" value="7"><label class="rating-btn" for="kv7">7</label>
+        <input type="radio" name="kind_versteht" id="kv8" value="8"><label class="rating-btn" for="kv8">8</label>
+        <input type="radio" name="kind_versteht" id="kv9" value="9"><label class="rating-btn" for="kv9">9</label>
+        <input type="radio" name="kind_versteht" id="kv10" value="10"><label class="rating-btn" for="kv10">10</label>
+      </div>
+      <div class="rating-labels"><span>Gar nicht</span><span>Sofort verstanden</span></div>
+    </div>
+
+    <div class="question">
+      <label>War die Spielanleitung (Intro-Karte) klar?</label>
+      <div class="yesno-row">
+        <input type="radio" name="anleitung_klar" id="ak_ja" value="ja"><label class="yn-btn" for="ak_ja">✅ Ja</label>
+        <input type="radio" name="anleitung_klar" id="ak_vl" value="teilweise"><label class="yn-btn" for="ak_vl">🤔 Teils</label>
+        <input type="radio" name="anleitung_klar" id="ak_nein" value="nein"><label class="yn-btn" for="ak_nein">❌ Nein</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- AKTIVITÄTEN -->
+  <div class="section">
+    <div class="section-title">🎮 Aktivitäten</div>
+
+    <div class="question">
+      <label>Waren die Aktivitäten verständlich genug?
+        <div class="hint">Wusstet ihr immer, was zu tun ist?</div>
+      </label>
+      <div class="rating-row">
+        <input type="radio" name="akt_klar" id="ak1" value="1"><label class="rating-btn" for="ak1">1</label>
+        <input type="radio" name="akt_klar" id="ak2" value="2"><label class="rating-btn" for="ak2">2</label>
+        <input type="radio" name="akt_klar" id="ak3" value="3"><label class="rating-btn" for="ak3">3</label>
+        <input type="radio" name="akt_klar" id="ak4" value="4"><label class="rating-btn" for="ak4">4</label>
+        <input type="radio" name="akt_klar" id="ak5" value="5"><label class="rating-btn" for="ak5">5</label>
+        <input type="radio" name="akt_klar" id="ak6" value="6"><label class="rating-btn" for="ak6">6</label>
+        <input type="radio" name="akt_klar" id="ak7" value="7"><label class="rating-btn" for="ak7">7</label>
+        <input type="radio" name="akt_klar" id="ak8" value="8"><label class="rating-btn" for="ak8">8</label>
+        <input type="radio" name="akt_klar" id="ak9" value="9"><label class="rating-btn" for="ak9">9</label>
+        <input type="radio" name="akt_klar" id="ak10" value="10"><label class="rating-btn" for="ak10">10</label>
+      </div>
+      <div class="rating-labels"><span>Oft ratlos</span><span>Immer klar</span></div>
+    </div>
+
+    <div class="question">
+      <label>Wie war der Spaß-Faktor der Aktivitäten?</label>
+      <div class="rating-row">
+        <input type="radio" name="akt_spass" id="as1" value="1"><label class="rating-btn" for="as1">1</label>
+        <input type="radio" name="akt_spass" id="as2" value="2"><label class="rating-btn" for="as2">2</label>
+        <input type="radio" name="akt_spass" id="as3" value="3"><label class="rating-btn" for="as3">3</label>
+        <input type="radio" name="akt_spass" id="as4" value="4"><label class="rating-btn" for="as4">4</label>
+        <input type="radio" name="akt_spass" id="as5" value="5"><label class="rating-btn" for="as5">5</label>
+        <input type="radio" name="akt_spass" id="as6" value="6"><label class="rating-btn" for="as6">6</label>
+        <input type="radio" name="akt_spass" id="as7" value="7"><label class="rating-btn" for="as7">7</label>
+        <input type="radio" name="akt_spass" id="as8" value="8"><label class="rating-btn" for="as8">8</label>
+        <input type="radio" name="akt_spass" id="as9" value="9"><label class="rating-btn" for="as9">9</label>
+        <input type="radio" name="akt_spass" id="as10" value="10"><label class="rating-btn" for="as10">10</label>
+      </div>
+      <div class="rating-labels"><span>Langweilig</span><span>Super spaßig</span></div>
+    </div>
+
+    <div class="question">
+      <label>Haben die 💡 Ideen-Vorschläge geholfen?</label>
+      <div class="yesno-row">
+        <input type="radio" name="ideen_helfen" id="ih_ja" value="ja"><label class="yn-btn" for="ih_ja">✅ Ja</label>
+        <input type="radio" name="ideen_helfen" id="ih_vl" value="teilweise"><label class="yn-btn" for="ih_vl">🤔 Teils</label>
+        <input type="radio" name="ideen_helfen" id="ih_nein" value="nein"><label class="yn-btn" for="ih_nein">❌ Nicht nötig</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Hättet ihr euch fertig ausformulierte Aktivitäten gewünscht?
+        <div class="hint">Also weniger selbst ausdenken, mehr vorgegebene Beispiele</div>
+      </label>
+      <div class="yesno-row">
+        <input type="radio" name="mehr_vorgaben" id="mv_ja" value="ja"><label class="yn-btn" for="mv_ja">✅ Ja, bitte!</label>
+        <input type="radio" name="mehr_vorgaben" id="mv_vl" value="teilweise"><label class="yn-btn" for="mv_vl">🤔 Wäre nice</label>
+        <input type="radio" name="mehr_vorgaben" id="mv_nein" value="nein"><label class="yn-btn" for="mv_nein">❌ Passt so</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUG-KÖNIG MECHANIK -->
+  <div class="section">
+    <div class="section-title">🐛 Der Bug-König</div>
+
+    <div class="question">
+      <label>Hat der Bug-König als Gegner motiviert?</label>
+      <div class="rating-row">
+        <input type="radio" name="bugkoenig_motiv" id="bm1" value="1"><label class="rating-btn" for="bm1">1</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm2" value="2"><label class="rating-btn" for="bm2">2</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm3" value="3"><label class="rating-btn" for="bm3">3</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm4" value="4"><label class="rating-btn" for="bm4">4</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm5" value="5"><label class="rating-btn" for="bm5">5</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm6" value="6"><label class="rating-btn" for="bm6">6</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm7" value="7"><label class="rating-btn" for="bm7">7</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm8" value="8"><label class="rating-btn" for="bm8">8</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm9" value="9"><label class="rating-btn" for="bm9">9</label>
+        <input type="radio" name="bugkoenig_motiv" id="bm10" value="10"><label class="rating-btn" for="bm10">10</label>
+      </div>
+      <div class="rating-labels"><span>Egal</span><span>Super spannend!</span></div>
+    </div>
+
+    <div class="question">
+      <label>Wie war die Schwierigkeit der Challenges?</label>
+      <div class="emoji-row">
+        <input type="radio" name="schwierigkeit" id="schw1" value="zu_leicht"><label class="emoji-btn" for="schw1">🥱</label>
+        <input type="radio" name="schwierigkeit" id="schw2" value="etwas_leicht"><label class="emoji-btn" for="schw2">😊</label>
+        <input type="radio" name="schwierigkeit" id="schw3" value="genau_richtig"><label class="emoji-btn" for="schw3">👌</label>
+        <input type="radio" name="schwierigkeit" id="schw4" value="etwas_schwer"><label class="emoji-btn" for="schw4">😤</label>
+        <input type="radio" name="schwierigkeit" id="schw5" value="zu_schwer"><label class="emoji-btn" for="schw5">🤯</label>
+      </div>
+      <div class="rating-labels"><span>Zu leicht</span><span>Genau richtig</span><span>Zu schwer</span></div>
+    </div>
+
+    <div class="question">
+      <label>Hat der Bug-König gewonnen?</label>
+      <div class="yesno-row">
+        <input type="radio" name="bugkoenig_gewonnen" id="bg_ja" value="ja"><label class="yn-btn" for="bg_ja">🐛 Ja, leider</label>
+        <input type="radio" name="bugkoenig_gewonnen" id="bg_nein" value="nein"><label class="yn-btn" for="bg_nein">🎉 Nein, wir!</label>
+        <input type="radio" name="bugkoenig_gewonnen" id="bg_skip" value="nicht_gespielt"><label class="yn-btn" for="bg_skip">⏭ Nicht gespielt</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRAKTISCHES -->
+  <div class="section">
+    <div class="section-title">🖨️ Praktisches</div>
+
+    <div class="question">
+      <label>War die Schrift auf den gedruckten Karten gut lesbar?</label>
+      <div class="yesno-row">
+        <input type="radio" name="lesbar" id="les_ja" value="ja"><label class="yn-btn" for="les_ja">✅ Ja</label>
+        <input type="radio" name="lesbar" id="les_vl" value="teilweise"><label class="yn-btn" for="les_vl">🤔 Teils</label>
+        <input type="radio" name="lesbar" id="les_nein" value="nein"><label class="yn-btn" for="les_nein">❌ Zu klein</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Hattet ihr alle nötigen Materialien griffbereit?
+        <div class="hint">Becher, Stifte, Münzen, etc.</div>
+      </label>
+      <div class="yesno-row">
+        <input type="radio" name="material" id="mat_ja" value="ja"><label class="yn-btn" for="mat_ja">✅ Ja</label>
+        <input type="radio" name="material" id="mat_vl" value="teilweise"><label class="yn-btn" for="mat_vl">🤔 Teils</label>
+        <input type="radio" name="material" id="mat_nein" value="nein"><label class="yn-btn" for="mat_nein">❌ Hat gefehlt</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Wie lange habt ihr ungefähr gespielt?</label>
+      <div class="yesno-row">
+        <input type="radio" name="dauer" id="d1" value="15min"><label class="yn-btn" for="d1">~15 Min</label>
+        <input type="radio" name="dauer" id="d2" value="30min"><label class="yn-btn" for="d2">~30 Min</label>
+        <input type="radio" name="dauer" id="d3" value="45min"><label class="yn-btn" for="d3">~45 Min</label>
+        <input type="radio" name="dauer" id="d4" value="60min+"><label class="yn-btn" for="d4">60+ Min</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- KAUFBEREITSCHAFT -->
+  <div class="section">
+    <div class="section-title">💰 Wert & Kaufbereitschaft</div>
+
+    <div class="question">
+      <label>Würdet ihr ein fertiges, professionell gedrucktes Code Creatures kaufen?</label>
+      <div class="yesno-row">
+        <input type="radio" name="kaufen" id="kauf_ja" value="ja"><label class="yn-btn" for="kauf_ja">✅ Ja!</label>
+        <input type="radio" name="kaufen" id="kauf_vl" value="teilweise"><label class="yn-btn" for="kauf_vl">🤔 Kommt drauf an</label>
+        <input type="radio" name="kaufen" id="kauf_nein" value="nein"><label class="yn-btn" for="kauf_nein">❌ Nein</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Was wäre ein fairer Preis für ein fertiges Kartenspiel?
+        <div class="hint">Gedruckte Karten, Anleitung, Abenteuerkarte, Box</div>
+      </label>
+      <div class="yesno-row">
+        <input type="radio" name="preis" id="p1" value="10"><label class="yn-btn" for="p1">~10€</label>
+        <input type="radio" name="preis" id="p2" value="15"><label class="yn-btn" for="p2">~15€</label>
+        <input type="radio" name="preis" id="p3" value="20"><label class="yn-btn" for="p3">~20€</label>
+        <input type="radio" name="preis" id="p4" value="25"><label class="yn-btn" for="p4">25€+</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEME & HIGHLIGHTS -->
+  <div class="section">
+    <div class="section-title">🔍 Details</div>
+
+    <div class="question">
+      <label>Welche Karten fandet ihr am besten?
+        <div class="hint">Mehrfachauswahl möglich</div>
+      </label>
+      <div class="card-select">
+        <input type="checkbox" name="best" id="b1" value="1"><label for="b1">🐍 Schlange</label>
+        <input type="checkbox" name="best" id="b2" value="2"><label for="b2">🦁 Löwe</label>
+        <input type="checkbox" name="best" id="b3" value="3"><label for="b3">🐦 Vogel</label>
+        <input type="checkbox" name="best" id="b4" value="4"><label for="b4">🦔 Igel</label>
+        <input type="checkbox" name="best" id="b5" value="5"><label for="b5">🦊 Fuchs</label>
+        <input type="checkbox" name="best" id="b6" value="6"><label for="b6">🐝 Biene</label>
+        <input type="checkbox" name="best" id="b7" value="7"><label for="b7">🐜 Ameise</label>
+        <input type="checkbox" name="best" id="b8" value="8"><label for="b8">🐻 Bär</label>
+        <input type="checkbox" name="best" id="b9" value="9"><label for="b9">🦅 Adler</label>
+        <input type="checkbox" name="best" id="b10" value="10"><label for="b10">🐧 Pinguin</label>
+        <input type="checkbox" name="best" id="b11" value="11"><label for="b11">🐦‍⬛ Rabe</label>
+        <input type="checkbox" name="best" id="b12" value="12"><label for="b12">🦉 Eule</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>Wo gab es Probleme oder Verwirrung?
+        <div class="hint">Mehrfachauswahl möglich</div>
+      </label>
+      <div class="card-select">
+        <input type="checkbox" name="problem" id="p_1" value="1"><label for="p_1">🐍 Schlange</label>
+        <input type="checkbox" name="problem" id="p_2" value="2"><label for="p_2">🦁 Löwe</label>
+        <input type="checkbox" name="problem" id="p_3" value="3"><label for="p_3">🐦 Vogel</label>
+        <input type="checkbox" name="problem" id="p_4" value="4"><label for="p_4">🦔 Igel</label>
+        <input type="checkbox" name="problem" id="p_5" value="5"><label for="p_5">🦊 Fuchs</label>
+        <input type="checkbox" name="problem" id="p_6" value="6"><label for="p_6">🐝 Biene</label>
+        <input type="checkbox" name="problem" id="p_7" value="7"><label for="p_7">🐜 Ameise</label>
+        <input type="checkbox" name="problem" id="p_8" value="8"><label for="p_8">🐻 Bär</label>
+        <input type="checkbox" name="problem" id="p_9" value="9"><label for="p_9">🦅 Adler</label>
+        <input type="checkbox" name="problem" id="p_10" value="10"><label for="p_10">🐧 Pinguin</label>
+        <input type="checkbox" name="problem" id="p_11" value="11"><label for="p_11">🐦‍⬛ Rabe</label>
+        <input type="checkbox" name="problem" id="p_12" value="12"><label for="p_12">🦉 Eule</label>
+        <input type="checkbox" name="problem" id="p_keine" value="keine"><label for="p_keine">✅ Keine!</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREITEXT -->
+  <div class="section">
+    <div class="section-title">💬 Offenes Feedback</div>
+
+    <div class="question">
+      <label>Was hat euch am besten gefallen?
+        <div class="hint">Optional — aber super hilfreich!</div>
+      </label>
+      <textarea class="text-input" name="best_thing" placeholder="z.B. Die Kinder fanden den Bug-König toll..."></textarea>
+    </div>
+
+    <div class="question">
+      <label>Was sollten wir unbedingt verbessern?</label>
+      <textarea class="text-input" name="improve" placeholder="z.B. Die Texte waren etwas lang..."></textarea>
+    </div>
+
+    <div class="question">
+      <label>Sonstige Anmerkungen?</label>
+      <textarea class="text-input" name="sonstiges" placeholder="Alles was euch noch einfällt..."></textarea>
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="submitForm()">🚀 Feedback absenden</button>
+
+  </div>
+
+  <!-- DANKE-SEITE -->
+  <div class="thank-you" id="thankYou">
+    <div class="big-emoji">🎉</div>
+    <h2>Vielen Dank!</h2>
+    <p>Euer Feedback hilft uns, Code Creatures noch besser zu machen.<br>Ihr seid großartig! 💪</p>
+  </div>
+
+</div>
+
+<script>
+function submitForm() {
+  // Collect all form data
+  const data = {};
+  
+  // Radio buttons
+  document.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+    data[el.name] = el.value;
+  });
+  
+  // Checkboxes
+  ['best', 'problem'].forEach(name => {
+    const checked = [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(e => e.value);
+    if (checked.length) data[name] = checked.join(', ');
+  });
+  
+  // Text inputs
+  document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
+    if (el.value.trim()) data[el.name] = el.value.trim();
+  });
+  
+  // Add timestamp
+  data.timestamp = new Date().toISOString();
+  
+  console.log('Feedback:', JSON.stringify(data, null, 2));
+  
+  // Send to formsubmit.co (free, no signup needed)
+  // Replace YOUR_EMAIL with your actual email to receive submissions
+  const FORMSUBMIT_URL = 'https://formsubmit.co/ajax/kitt111@proton.me';
+  
+  fetch(FORMSUBMIT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(r => r.json()).then(d => console.log('Sent!', d)).catch(e => console.log('Backup: stored locally'));
+  
+  // Store in localStorage as backup
+  const existing = JSON.parse(localStorage.getItem('cc_feedback') || '[]');
+  existing.push(data);
+  localStorage.setItem('cc_feedback', JSON.stringify(existing));
+  
+  // Show thank you
+  document.getElementById('formContent').classList.add('hidden');
+  document.getElementById('thankYou').classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
